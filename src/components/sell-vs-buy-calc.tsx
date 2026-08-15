@@ -79,8 +79,8 @@ export function SellVsBuyCalc() {
           <SiteNav current="calc" />
           <h1 className="hs-hero__title">Sell vs buy</h1>
           <p className="hs-hero__sub">
-            Keep house 1, or sell it and buy house 2 as a rental. Money made after 25 years — cash
-            rent and S&amp;P profit, not leftover house equity.
+            Keep house 1, or sell it and buy house 2 as a rental. Compare total wealth after 25
+            years — home equity plus cash, rent, and investments.
           </p>
         </div>
       </section>
@@ -238,7 +238,7 @@ export function SellVsBuyCalc() {
           </div>
 
           <div className="hs-calc__verdict" aria-live="polite">
-            <p className="hs-eyebrow">Money made after 25 years</p>
+            <p className="hs-eyebrow">Total wealth after 25 years</p>
             <h2 className="hs-heading hs-heading--sm">
               {keepWins ? "Keeping house 1" : "Selling and buying house 2"} comes out ahead by{" "}
               {money.format(gap)}
@@ -246,18 +246,17 @@ export function SellVsBuyCalc() {
             <div className="hs-calc__totals">
               <article className={keepWins ? "hs-calc__path hs-calc__path--win" : "hs-calc__path"}>
                 <p className="hs-card__source">Keep house 1</p>
-                <p className="hs-calc__stat">{money.format(result.keepHouse1.moneyMade)}</p>
+                <p className="hs-calc__stat">{money.format(result.keepHouse1.totalAfterYears)}</p>
                 <p className="hs-copy">
-                  Cash made. {money.format(result.keepHouse1.equity)} stays in the house (not
-                  counted).
+                  Home equity after appreciation and paydown. No rental or S&amp;P cash on this path.
                 </p>
               </article>
               <article className={!keepWins ? "hs-calc__path hs-calc__path--win" : "hs-calc__path"}>
                 <p className="hs-card__source">Sell house 1, buy house 2</p>
-                <p className="hs-calc__stat">{money.format(result.sellAndBuy.moneyMade)}</p>
+                <p className="hs-calc__stat">{money.format(result.sellAndBuy.totalAfterYears)}</p>
                 <p className="hs-copy">
-                  Net rent + S&amp;P profit. {money.format(result.sellAndBuy.futureHouse2Value)}{" "}
-                  stays in house 2 (not counted).
+                  House 2 equity, net rent, S&amp;P, and leftover sale cash. Cash-only profit:{" "}
+                  {money.format(result.sellAndBuy.moneyMade)}.
                 </p>
               </article>
             </div>

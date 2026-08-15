@@ -21,7 +21,7 @@ describe("SellVsBuyCalc", () => {
     expect(screen.getByLabelText("House 2 S&P 500 invest monthly")).toHaveValue(500);
     expect(screen.getByRole("heading", { name: /keep house 1 · 25 years/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /sell & buy house 2 · 25 years/i })).toBeInTheDocument();
-    expect(screen.getByText("Money made after 25 years")).toBeInTheDocument();
+    expect(screen.getByText("Total wealth after 25 years")).toBeInTheDocument();
     expect(screen.getByText(/net monthly income/i)).toBeInTheDocument();
   });
 

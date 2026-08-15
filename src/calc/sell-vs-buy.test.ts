@@ -75,7 +75,8 @@ describe("projectSellVsBuy", () => {
     expect(result.keepHouse1.monthlyPayment).toBeCloseTo(schedule.monthlyPayment, 6);
     expect(result.keepHouse1.equity).toBeCloseTo(futureValue - schedule.remainingBalance, 6);
     expect(result.keepHouse1.moneyMade).toBe(0);
-    expect(result.keepHouse1.totalAfterYears).toBe(0);
+    expect(result.keepHouse1.totalAfterYears).toBeCloseTo(futureValue - schedule.remainingBalance, 6);
+    expect(result.keepHouse1.totalAfterYears).toBeCloseTo(result.keepHouse1.equity, 6);
   });
 
   it("counts money made as cash rent plus S&P profit, not leftover house equity", () => {
@@ -90,12 +91,14 @@ describe("projectSellVsBuy", () => {
 
     expect(result.keepHouse1.moneyMade).toBe(0);
     expect(result.sellAndBuy.moneyMade).toBeCloseTo(expectedMade, 6);
-    expect(result.sellAndBuy.totalAfterYears).toBe(result.sellAndBuy.moneyMade);
-    expect(result.sellAndBuy.moneyMade).toBeLessThan(
-      result.sellAndBuy.cumulativeNetRent +
-        result.sellAndBuy.sp500FutureValue +
-        result.sellAndBuy.futureHouse2Value,
+    expect(result.sellAndBuy.totalAfterYears).toBeCloseTo(
+      result.sellAndBuy.moneyMade +
+        result.sellAndBuy.futureHouse2Value +
+        result.sellAndBuy.leftoverCash +
+        result.sellAndBuy.sp500Contributed,
+      6,
     );
+    expect(result.sellAndBuy.moneyMade).toBeLessThan(result.sellAndBuy.totalAfterYears);
   });
 
   it("sells house 1, buys house 2, and totals rent, S&P, and ending equity after 25 years", () => {
@@ -107,7 +110,14 @@ describe("projectSellVsBuy", () => {
     expect(result.sellAndBuy.unusedHouseBudget).toBe(0);
     expect(result.sellAndBuy.sp500MonthlyFutureValue).toBeCloseTo(expectedSp500, 6);
     expect(result.sellAndBuy.sp500FutureValue).toBeCloseTo(expectedSp500, 6);
-    expect(result.sellAndBuy.totalAfterYears).toBeCloseTo(result.sellAndBuy.moneyMade, 6);
+    expect(result.sellAndBuy.totalAfterYears).toBeGreaterThan(result.sellAndBuy.moneyMade);
+    expect(result.sellAndBuy.totalAfterYears).toBeCloseTo(
+      result.sellAndBuy.moneyMade +
+        result.sellAndBuy.futureHouse2Value +
+        result.sellAndBuy.leftoverCash +
+        result.sellAndBuy.sp500Contributed,
+      6,
+    );
   });
 
   it("compounds house 2 S&P contributions monthly at 8%", () => {
@@ -146,7 +156,13 @@ describe("projectSellVsBuy", () => {
       cheaper.sellAndBuy.sp500MonthlyFutureValue + cheaper.sellAndBuy.sp500LumpFutureValue,
       6,
     );
-    expect(cheaper.sellAndBuy.totalAfterYears).toBeCloseTo(cheaper.sellAndBuy.moneyMade, 6);
+    expect(cheaper.sellAndBuy.totalAfterYears).toBeCloseTo(
+      cheaper.sellAndBuy.moneyMade +
+        cheaper.sellAndBuy.futureHouse2Value +
+        cheaper.sellAndBuy.leftoverCash +
+        cheaper.sellAndBuy.sp500Contributed,
+      6,
+    );
   });
 
   it("grows house 2 tax as the property appreciates, so later years net less than year 1", () => {

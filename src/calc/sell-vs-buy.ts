@@ -228,6 +228,9 @@ export function projectSellVsBuy(raw: SellVsBuyInput): SellVsBuyResult {
   const sp500Gain = sp500FutureValue - sp500Contributed;
   const keepMoneyMade = 0;
   const sellMoneyMade = cumulativeNetRent + sp500Gain - remainingHouse2Mortgage;
+  const keepTotalWealth = equity;
+  const sellTotalWealth =
+    sellMoneyMade + futureHouse2Value + leftoverCash + sp500Contributed;
 
   return {
     years: input.years,
@@ -250,7 +253,7 @@ export function projectSellVsBuy(raw: SellVsBuyInput): SellVsBuyResult {
       paidOff: schedule.paidOff,
       equity,
       moneyMade: keepMoneyMade,
-      totalAfterYears: keepMoneyMade,
+      totalAfterYears: keepTotalWealth,
     },
     sellAndBuy: {
       saleCosts,
@@ -267,7 +270,7 @@ export function projectSellVsBuy(raw: SellVsBuyInput): SellVsBuyResult {
       sp500Contributed,
       sp500Gain,
       moneyMade: sellMoneyMade,
-      totalAfterYears: sellMoneyMade,
+      totalAfterYears: sellTotalWealth,
     },
   };
 }

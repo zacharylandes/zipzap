@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FacebookConnect } from "@/components/facebook-connect";
 import { MarketsPanel } from "@/components/markets-panel";
 import { PaginatedResultsGrid } from "@/components/paginated-results-grid";
 import { SearchForm } from "@/components/search-form";
+import { SiteNav } from "@/components/site-nav";
 import { SourceStatusList } from "@/components/source-status";
 import type { ListingSort } from "@/markets/enrich";
 import { homeHref, zipListingsHref, type MarketQuery } from "@/markets/query";
@@ -96,6 +98,12 @@ export function SearchApp({ query, facebookEnabled = false }: SearchAppProps) {
       <section className="hs-hero">
         <div className="hs-hero__inner">
           <p className="hs-eyebrow">House Search</p>
+          <SiteNav current="search" />
+          <p className="hs-hero__actions">
+            <Link href="/calc" className="hs-btn hs-btn--outline">
+              Sell vs buy calculator
+            </Link>
+          </p>
           <h1 className="hs-hero__title">
             {mode === "investor" ? "Highest rent for the price" : "Find homes across borders"}
           </h1>
