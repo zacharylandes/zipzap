@@ -1,0 +1,202 @@
+import { describe, expect, it } from "vitest";
+import { inmuebles24Adapter } from "@/search/adapters/inmuebles24";
+import { idealistaAdapter } from "@/search/adapters/idealista";
+import { realtorAdapter } from "@/search/adapters/realtor";
+import { fincaraizAdapter } from "@/search/adapters/fincaraiz";
+import { portalInmobiliarioAdapter } from "@/search/adapters/portal-inmobiliario";
+import { immobiliareAdapter } from "@/search/adapters/immobiliare";
+import {
+  normalizeCurrency,
+  normalizeRawListing,
+} from "@/search/adapters/firecrawl-adapter";
+import { MAX_LISTINGS_PER_SOURCE } from "@/search/schema";
+
+describe("portal URL builders", () => {
+  const base = {
+    location: "Ciudad de Mexico",
+    listingType: "rent" as const,
+    maxPrice: 20000,
+    bedrooms: 2,
+  };
+
+  it("builds Inmuebles24 URL", () => {
+    expect(
+      inmuebles24Adapter.buildSearchUrl({ ...base, country: "MX" }),
+    ).toContain("inmuebles24.com/inmuebles-en-renta-en-ciudad-de-mexico.html");
+  });
+
+  it("builds Idealista URL", () => {
+    expect(
+      idealistaAdapter.buildSearchUrl({
+        country: "ES",
+        location: "Madrid",
+        listingType: "sale",
+        maxPrice: 400000,
+      }),
+    ).toBe(
+      "https://www.idealista.com/venta-viviendas/madrid-madrid/con-precio-hasta_400000/",
+    );
+  });
+
+  it("builds Realtor URL", () => {
+    expect(
+      realtorAdapter.buildSearchUrl({
+        country: "US",
+        location: "Austin, TX",
+        listingType: "sale",
+        minPrice: 300000,
+      }),
+    ).toContain("realtor.com/realestateandhomes-search/Austin_TX/price-300000-na");
+  });
+
+  it("uses ZIP on Realtor sale searches when provided", () => {
+    expect(
+      realtorAdapter.buildSearchUrl({
+        country: "US",
+        location: "Oklahoma City, OK",
+        listingType: "sale",
+        maxPrice: 240000,
+        zip: "73103",
+      }),
+    ).toBe("https://www.realtor.com/realestateandhomes-search/73103/price-na-240000");
+  });
+
+  it("puts min and max price in the Realtor path", () => {
+    expect(
+      realtorAdapter.buildSearchUrl({
+        country: "US",
+        location: "Durant, OK",
+        listingType: "sale",
+        minPrice: 90_000,
+        maxPrice: 240_000,
+        zip: "74701",
+      }),
+    ).toBe("https://www.realtor.com/realestateandhomes-search/74701/price-90000-240000");
+  });
+
+  it("builds FincaRaíz URL", () => {
+    expect(
+      fincaraizAdapter.buildSearchUrl({
+        country: "CO",
+        location: "Bogota",
+        listingType: "rent",
+      }),
+    ).toContain("fincaraiz.com.co/arriendo/inmuebles/bogota");
+  });
+
+  it("builds Portal Inmobiliario URL", () => {
+    expect(
+      portalInmobiliarioAdapter.buildSearchUrl({
+        country: "CL",
+        location: "Santiago",
+        listingType: "sale",
+      }),
+    ).toContain("portalinmobiliario.com/venta/departamento/santiago");
+  });
+
+  it("builds Immobiliare URL", () => {
+    expect(
+      immobiliareAdapter.buildSearchUrl({
+        country: "IT",
+        location: "Milano",
+        listingType: "rent",
+        maxPrice: 1500,
+      }),
+    ).toBe(
+      "https://www.immobiliare.it/affitto-case/milano/?prezzoMassimo=1500",
+    );
+  });
+});
+
+describe("normalizeRawListing", () => {
+  it("drops incomplete rows and accepts valid ones", () => {
+    const input = {
+      country: "MX" as const,
+      location: "CDMX",
+      listingType: "rent" as const,
+    };
+    expect(
+      normalizeRawListing(
+        { title: "Nice flat", url: "/listing/1", price: "12000" },
+        input,
+        {
+          sourceId: "inmuebles24",
+          sourceName: "Inmuebles24",
+          baseUrl: "https://www.inmuebles24.com",
+        },
+      ),
+    ).toMatchObject({
+      title: "Nice flat",
+      price: 12000,
+      currency: "MXN",
+    });
+
+    expect(
+      normalizeRawListing(
+        { title: "Missing url" },
+        input,
+        {
+          sourceId: "inmuebles24",
+          sourceName: "Inmuebles24",
+          baseUrl: "https://www.inmuebles24.com",
+        },
+      ),
+    ).toBeNull();
+  });
+
+  it("documents MVP listing cap", () => {
+    expect(MAX_LISTINGS_PER_SOURCE).toBe(40);
+  });
+});
+
+describe("normalizeFacebookListing", () => {
+  it("parses price, currency, beds/baths from Marketplace card text", async () => {
+    const { normalizeFacebookListing } = await import(
+      "@/search/adapters/facebook"
+    );
+    const listing = normalizeFacebookListing(
+      {
+        url: "https://www.facebook.com/marketplace/item/123",
+        text: "$1,500 | 2 bed 1 bath apartment | Austin, TX",
+        img: "https://scontent.example/x.jpg",
+      },
+      { country: "US", location: "Austin, TX", listingType: "rent" },
+    );
+
+    expect(listing).not.toBeNull();
+    expect(listing!.price).toBe(1500);
+    expect(listing!.currency).toBe("USD");
+    expect(listing!.bedrooms).toBe(2);
+    expect(listing!.bathrooms).toBe(1);
+    expect(listing!.url).toBe("https://www.facebook.com/marketplace/item/123");
+    expect(listing!.thumbnailUrl).toBe("https://scontent.example/x.jpg");
+  });
+
+  it("rejects entries without a valid URL", async () => {
+    const { normalizeFacebookListing } = await import(
+      "@/search/adapters/facebook"
+    );
+    expect(
+      normalizeFacebookListing(
+        { url: "", text: "$100", img: null },
+        { country: "MX", location: "Merida", listingType: "sale" },
+      ),
+    ).toBeNull();
+  });
+});
+
+describe("normalizeCurrency", () => {
+  it("maps portal shorthands to ISO codes", () => {
+    expect(normalizeCurrency("MN", "MXN")).toBe("MXN");
+    expect(normalizeCurrency("MN$", "MXN")).toBe("MXN");
+    expect(normalizeCurrency("$", "USD")).toBe("USD");
+    expect(normalizeCurrency("€", "EUR")).toBe("EUR");
+  });
+
+  it("keeps valid ISO codes and falls back otherwise", () => {
+    expect(normalizeCurrency("usd", "MXN")).toBe("USD");
+    expect(normalizeCurrency("garbage text", "COP")).toBe("COP");
+    expect(normalizeCurrency("", "CLP")).toBe("CLP");
+    expect(normalizeCurrency(null, "EUR")).toBe("EUR");
+  });
+});
