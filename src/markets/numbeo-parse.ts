@@ -1,5 +1,12 @@
 export const NUMBEO_OUTSIDE_RENT_LABEL = "1 Bedroom Apartment Outside of City Centre";
 export const NUMBEO_CENTRE_RENT_LABEL = "1 Bedroom Apartment in City Centre";
+export const NUMBEO_OUTSIDE_3BR_LABEL = "3 Bedroom Apartment Outside of City Centre";
+export const NUMBEO_CENTRE_3BR_LABEL = "3 Bedroom Apartment in City Centre";
+
+export type NumbeoParsedRents = {
+  oneBedroom: number | null;
+  threeBedroom: number | null;
+};
 
 function parsePriceCell(text: string): number | null {
   const cleaned = text.replace(/[^\d.,]/g, "").replace(/,/g, "");
@@ -23,10 +30,21 @@ function parseRentRow(html: string, label: string): number | null {
   return parsePriceCell(priceCell);
 }
 
-export function parseNumbeoMonthlyRent(html: string): number | null {
-  for (const label of [NUMBEO_OUTSIDE_RENT_LABEL, NUMBEO_CENTRE_RENT_LABEL]) {
+function firstRent(html: string, labels: string[]): number | null {
+  for (const label of labels) {
     const rent = parseRentRow(html, label);
     if (rent != null) return rent;
   }
   return null;
+}
+
+export function parseNumbeoRents(html: string): NumbeoParsedRents {
+  return {
+    oneBedroom: firstRent(html, [NUMBEO_OUTSIDE_RENT_LABEL, NUMBEO_CENTRE_RENT_LABEL]),
+    threeBedroom: firstRent(html, [NUMBEO_OUTSIDE_3BR_LABEL, NUMBEO_CENTRE_3BR_LABEL]),
+  };
+}
+
+export function parseNumbeoMonthlyRent(html: string): number | null {
+  return parseNumbeoRents(html).oneBedroom;
 }

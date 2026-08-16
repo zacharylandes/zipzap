@@ -3,6 +3,7 @@ import path from "node:path";
 
 export type NumbeoRentEntry = {
   monthlyRent: number;
+  monthlyRent3br?: number | null;
   currency: string;
   numbeoCity: string;
   label: string;

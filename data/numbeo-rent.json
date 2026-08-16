@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-08-16T16:50:00.000Z",
   "source": "https://www.numbeo.com/property-investment/",
-  "description": "1 Bedroom Apartment Outside of City Centre (fallback: in City Centre), monthly",
+  "description": "1 Bedroom and 3 Bedroom Apartment Outside of City Centre (centre fallback), monthly. 2BR listings use the midpoint.",
   "entries": {
     "ciudad-de-mexico": { "monthlyRent": 12163.67, "currency": "MXN", "numbeoCity": "Mexico-City", "label": "Ciudad de México" },
     "guadalajara": { "monthlyRent": 8902.38, "currency": "MXN", "numbeoCity": "Guadalajara", "label": "Guadalajara" },

@@ -56,14 +56,41 @@ describe("enrichListings", () => {
 });
 
 describe("enrichListingsWithNumbeo", () => {
+  const rents = { oneBedroom: 522, threeBedroom: 890 };
+
   it("estimates gross yield on sale listings from Numbeo rent", () => {
     const [enriched] = enrichListingsWithNumbeo(
-      [listing({ id: "mx", title: "Condo", price: 2_000_000, currency: "MXN" })],
-      10_000,
+      [listing({ id: "mx", title: "Condo", price: 2_000_000, currency: "MXN", bedrooms: 1 })],
+      rents,
     );
-    expect(enriched?.estimatedMonthlyRent).toBe(10_000);
+    expect(enriched?.estimatedMonthlyRent).toBe(522);
     expect(enriched?.rentEstimateSource).toBe("numbeo");
-    expect(enriched?.grossYield).toBeCloseTo(0.06);
+    expect(enriched?.grossYield).toBeCloseTo((522 * 12) / 2_000_000);
+  });
+
+  it("uses 3BR Numbeo rent for 3-bedroom listings", () => {
+    const [enriched] = enrichListingsWithNumbeo(
+      [listing({ id: "3br", title: "3 bed", price: 100_000, bedrooms: 3 })],
+      rents,
+    );
+    expect(enriched?.estimatedMonthlyRent).toBe(890);
+    expect(enriched?.grossYield).toBeCloseTo((890 * 12) / 100_000);
+  });
+
+  it("uses the midpoint of 1BR and 3BR for 2-bedroom listings", () => {
+    const [enriched] = enrichListingsWithNumbeo(
+      [listing({ id: "2br", title: "2 bed", price: 100_000, bedrooms: 2 })],
+      rents,
+    );
+    expect(enriched?.estimatedMonthlyRent).toBe(706);
+  });
+
+  it("uses 1BR Numbeo rent when bedrooms are missing", () => {
+    const [enriched] = enrichListingsWithNumbeo(
+      [listing({ id: "unk", title: "Unknown", price: 100_000, bedrooms: null })],
+      rents,
+    );
+    expect(enriched?.estimatedMonthlyRent).toBe(522);
   });
 });
 

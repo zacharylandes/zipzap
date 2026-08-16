@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseNumbeoMonthlyRent } from "@/markets/numbeo-parse";
+import { parseNumbeoMonthlyRent, parseNumbeoRents } from "@/markets/numbeo-parse";
 
 describe("parseNumbeoMonthlyRent", () => {
   it("parses outside-centre rent from a Numbeo table row", () => {
@@ -25,5 +25,39 @@ describe("parseNumbeoMonthlyRent", () => {
       </table>
     `;
     expect(parseNumbeoMonthlyRent(html)).toBe(850);
+  });
+});
+
+describe("parseNumbeoRents", () => {
+  it("parses 1BR and 3BR outside-centre rows", () => {
+    const html = `
+      <table>
+        <tr>
+          <td>1 Bedroom Apartment Outside of City Centre</td>
+          <td>$522.00</td>
+        </tr>
+        <tr>
+          <td>3 Bedroom Apartment Outside of City Centre</td>
+          <td>$890.00</td>
+        </tr>
+      </table>
+    `;
+    expect(parseNumbeoRents(html)).toEqual({ oneBedroom: 522, threeBedroom: 890 });
+  });
+
+  it("falls back to city-centre 3BR when outside 3BR is missing", () => {
+    const html = `
+      <table>
+        <tr>
+          <td>1 Bedroom Apartment Outside of City Centre</td>
+          <td>$522.00</td>
+        </tr>
+        <tr>
+          <td>3 Bedroom Apartment in City Centre</td>
+          <td>$1,200.00</td>
+        </tr>
+      </table>
+    `;
+    expect(parseNumbeoRents(html)).toEqual({ oneBedroom: 522, threeBedroom: 1200 });
   });
 });

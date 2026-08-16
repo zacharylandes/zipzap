@@ -1,8 +1,24 @@
 import { describe, expect, it, vi } from "vitest";
-import { applyLocalCurrency, numbeoRentInLocalCurrency } from "@/markets/listing-fx";
+import { applyLocalCurrency, numbeoRentInLocalCurrency, numbeoRentsInLocalCurrency } from "@/markets/listing-fx";
 import * as fx from "@/markets/fx";
 
 describe("numbeoRentInLocalCurrency", () => {
+  it("converts both 1BR and 3BR Numbeo rents into the search currency", async () => {
+    vi.spyOn(fx, "fetchFxRate").mockResolvedValue(1500);
+
+    await expect(
+      numbeoRentsInLocalCurrency(
+        {
+          monthlyRent: 522,
+          monthlyRent3br: 890,
+          currency: "USD",
+          numbeoCity: "Buenos-Aires",
+          label: "Buenos Aires (CABA)",
+        },
+        "ARS",
+      ),
+    ).resolves.toEqual({ oneBedroom: 783_000, threeBedroom: 1_335_000 });
+  });
   it("passes through Numbeo USD rent when search currency is USD", async () => {
     await expect(
       numbeoRentInLocalCurrency(

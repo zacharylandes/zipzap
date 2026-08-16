@@ -19,18 +19,42 @@ export function enrichListings(
   }));
 }
 
+export type NumbeoRents = {
+  oneBedroom: number;
+  threeBedroom: number | null;
+};
+
+export function numbeoRentForBedrooms(
+  rents: NumbeoRents,
+  bedrooms: number | null | undefined,
+): number {
+  const three = rents.threeBedroom;
+  if (three != null && three > 0) {
+    if (bedrooms != null && bedrooms >= 3) return three;
+    if (bedrooms === 2) return (rents.oneBedroom + three) / 2;
+  }
+  return rents.oneBedroom;
+}
+
 export function enrichListingsWithNumbeo(
   listings: Listing[],
-  monthlyRent: number | null | undefined,
+  rents: NumbeoRents | number | null | undefined,
 ): Listing[] {
-  if (monthlyRent == null || !(monthlyRent > 0)) return listings;
-  return listings.map((listing) => ({
-    ...listing,
-    estimatedMonthlyRent: monthlyRent,
-    rentEstimateSource: "numbeo",
-    grossYield:
-      listing.price != null ? grossYield(monthlyRent, listing.price) : null,
-  }));
+  const normalized =
+    typeof rents === "number"
+      ? { oneBedroom: rents, threeBedroom: null }
+      : rents;
+  if (normalized == null || !(normalized.oneBedroom > 0)) return listings;
+  return listings.map((listing) => {
+    const monthlyRent = numbeoRentForBedrooms(normalized, listing.bedrooms);
+    return {
+      ...listing,
+      estimatedMonthlyRent: monthlyRent,
+      rentEstimateSource: "numbeo",
+      grossYield:
+        listing.price != null ? grossYield(monthlyRent, listing.price) : null,
+    };
+  });
 }
 
 function compareNullableNumber(

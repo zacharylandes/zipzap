@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { NumbeoRentFile } from "../src/markets/numbeo";
-import { parseNumbeoMonthlyRent, NUMBEO_CENTRE_RENT_LABEL, NUMBEO_OUTSIDE_RENT_LABEL } from "../src/markets/numbeo-parse";
+import { parseNumbeoRents, NUMBEO_OUTSIDE_RENT_LABEL, NUMBEO_OUTSIDE_3BR_LABEL } from "../src/markets/numbeo-parse";
 import { LISTING_LOCATIONS } from "../src/search/locations";
 import { COUNTRY_CURRENCY, type CountryCode } from "../src/search/schema";
 
@@ -9,7 +9,10 @@ const ROOT = path.resolve(import.meta.dirname, "..");
 const OUT_PATH = path.join(ROOT, "data", "numbeo-rent.json");
 const UA = "house-search/0.1 (numbeo rent refresh; research only)";
 
-async function fetchNumbeoRent(numbeoCity: string): Promise<number> {
+async function fetchNumbeoRent(numbeoCity: string): Promise<{
+  monthlyRent: number;
+  monthlyRent3br: number | null;
+}> {
   const url = `https://www.numbeo.com/property-investment/in/${encodeURIComponent(numbeoCity)}`;
   const res = await fetch(url, {
     headers: { "user-agent": UA, accept: "text/html" },
@@ -18,11 +21,11 @@ async function fetchNumbeoRent(numbeoCity: string): Promise<number> {
     throw new Error(`${url} -> ${res.status}`);
   }
   const html = await res.text();
-  const rent = parseNumbeoMonthlyRent(html);
-  if (rent == null) {
+  const rents = parseNumbeoRents(html);
+  if (rents.oneBedroom == null) {
     throw new Error(`${url} -> missing Numbeo 1BR rent row`);
   }
-  return rent;
+  return { monthlyRent: rents.oneBedroom, monthlyRent3br: rents.threeBedroom };
 }
 
 async function main() {
@@ -42,14 +45,17 @@ async function main() {
   ][]) {
     for (const location of locations) {
       try {
-        const monthlyRent = await fetchNumbeoRent(location.numbeoCity);
+        const rents = await fetchNumbeoRent(location.numbeoCity);
         entries[location.location] = {
-          monthlyRent,
+          monthlyRent: rents.monthlyRent,
+          monthlyRent3br: rents.monthlyRent3br,
           currency: COUNTRY_CURRENCY[countryCode],
           numbeoCity: location.numbeoCity,
           label: location.label,
         };
-        console.log(`  ${location.label}: ${monthlyRent} ${COUNTRY_CURRENCY[countryCode]}`);
+        console.log(
+          `  ${location.label}: 1BR ${rents.monthlyRent} / 3BR ${rents.monthlyRent3br ?? "—"} ${COUNTRY_CURRENCY[countryCode]}`,
+        );
         await new Promise((resolve) => setTimeout(resolve, 1500));
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -62,7 +68,7 @@ async function main() {
   const file: NumbeoRentFile = {
     generatedAt: new Date().toISOString(),
     source: "https://www.numbeo.com/property-investment/",
-    description: `${NUMBEO_OUTSIDE_RENT_LABEL} (fallback: ${NUMBEO_CENTRE_RENT_LABEL}), monthly`,
+    description: `${NUMBEO_OUTSIDE_RENT_LABEL} and ${NUMBEO_OUTSIDE_3BR_LABEL} (centre fallback), monthly`,
     entries,
   };
 
