@@ -75,7 +75,7 @@ describe("zip and home hrefs", () => {
     ).toBe("/?minPrice=90000&maxPrice=240000&crimeFilter=excludeHigh&state=MS");
   });
 
-  it("includes country in home URL when not US", () => {
+  it("includes only country in home URL when not US", () => {
     expect(
       homeHref({
         country: "MX",
@@ -83,7 +83,15 @@ describe("zip and home hrefs", () => {
         maxPrice: 240_000,
         crimeFilter: "averageOrBetter",
       }),
-    ).toBe("/?country=MX&minPrice=90000&maxPrice=240000&crimeFilter=averageOrBetter");
+    ).toBe("/?country=MX");
+    expect(
+      homeHref({
+        country: "AR",
+        minPrice: 90_000,
+        maxPrice: 240_000,
+        crimeFilter: "averageOrBetter",
+      }),
+    ).toBe("/?country=AR");
   });
 });
 

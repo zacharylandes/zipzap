@@ -79,6 +79,15 @@ export function SearchApp({ query }: SearchAppProps) {
 
   const sortedMarkets = useMemo(() => sortMarkets(markets, sort), [markets, sort]);
 
+  useEffect(() => {
+    if (country === "US") return;
+    const next = homeHref({ country });
+    const current = `/${window.location.search}`;
+    if (current !== next) {
+      router.replace(next, { scroll: false });
+    }
+  }, [country, router]);
+
   function replaceQuery(next: Partial<MarketQuery>) {
     if ((next.country ?? country) === "US") {
       setMarketsLoading(true);

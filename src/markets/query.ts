@@ -61,7 +61,10 @@ export function toListingSort(sort: MarketSort): ListingSort {
 
 export function serializeMarketQuery(query: MarketQuery): URLSearchParams {
   const params = new URLSearchParams();
-  if (query.country && query.country !== "US") params.set("country", query.country);
+  if (query.country && query.country !== "US") {
+    params.set("country", query.country);
+    return params;
+  }
   params.set("minPrice", String(query.minPrice ?? DEFAULT_MIN_PRICE));
   params.set("maxPrice", String(query.maxPrice ?? DEFAULT_MAX_PRICE));
   params.set("crimeFilter", query.crimeFilter ?? "averageOrBetter");

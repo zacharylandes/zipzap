@@ -81,6 +81,7 @@ export function SearchForm({ country, locations, onSubmit, loading }: SearchForm
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
             aria-label={`Minimum price in ${currency}`}
+            autoComplete="off"
           />
         </label>
 
@@ -92,6 +93,7 @@ export function SearchForm({ country, locations, onSubmit, loading }: SearchForm
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             aria-label={`Maximum price in ${currency}`}
+            autoComplete="off"
           />
         </label>
 
@@ -103,6 +105,7 @@ export function SearchForm({ country, locations, onSubmit, loading }: SearchForm
             value={bedrooms}
             onChange={(e) => setBedrooms(e.target.value)}
             aria-label="Bedrooms"
+            autoComplete="off"
           />
         </label>
 
