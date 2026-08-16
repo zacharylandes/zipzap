@@ -12,7 +12,7 @@ export const COUNTRY_CURRENCY: Record<CountryCode, string> = {
   US: "USD",
   CO: "COP",
   CL: "CLP",
-  AR: "ARS",
+  AR: "USD",
   PE: "PEN",
   IT: "EUR",
 };

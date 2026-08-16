@@ -4,6 +4,7 @@ import {
   COUNTRY_CURRENCY,
   MAX_LISTINGS_PER_SOURCE,
   SEARCH_CACHE_TTL_MS,
+  type CountryCode,
   type Listing,
   type SearchInput,
 } from "@/search/schema";
@@ -75,12 +76,13 @@ const CURRENCY_ALIASES: Record<string, string> = {
 export function normalizeCurrency(
   raw: string | null | undefined,
   fallback: string,
+  country?: CountryCode,
 ): string {
   if (!raw) return fallback;
   const trimmed = raw.trim().toUpperCase();
   if (!trimmed) return fallback;
   if (CURRENCY_ALIASES[trimmed]) return CURRENCY_ALIASES[trimmed];
-  if (trimmed === "$") return fallback;
+  if (trimmed === "$") return country === "AR" ? "ARS" : fallback;
   // Only trust clean 3-letter ISO codes from scraped text; otherwise use the
   // country's known currency so display stays correct.
   if (/^[A-Z]{3}$/.test(trimmed)) return trimmed;
@@ -125,7 +127,11 @@ export function normalizeRawListing(
     sourceName: meta.sourceName,
     title,
     price: parseNumber(raw.price),
-    currency: normalizeCurrency(raw.currency, COUNTRY_CURRENCY[input.country]),
+    currency: normalizeCurrency(
+      raw.currency,
+      COUNTRY_CURRENCY[input.country],
+      input.country,
+    ),
     bedrooms: parseNumber(raw.bedrooms),
     bathrooms: parseNumber(raw.bathrooms),
     area: parseNumber(raw.area),

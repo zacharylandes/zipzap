@@ -18,14 +18,14 @@ const SAMPLE_CARD = `
 
 describe("parseMercadoLibrePriceLabel", () => {
   it("detects USD prices in Argentina", () => {
-    expect(parseMercadoLibrePriceLabel("826800 dólares", "ARS")).toEqual({
+    expect(parseMercadoLibrePriceLabel("826800 dólares", "AR")).toEqual({
       price: 826800,
       currency: "USD",
     });
   });
 
-  it("parses dotted peso amounts", () => {
-    expect(parseMercadoLibrePriceLabel("150.000.000 pesos", "ARS")).toEqual({
+  it("parses dotted peso amounts as ARS even when Argentina displays USD", () => {
+    expect(parseMercadoLibrePriceLabel("150.000.000 pesos", "AR")).toEqual({
       price: 150_000_000,
       currency: "ARS",
     });

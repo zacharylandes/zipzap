@@ -997,6 +997,7 @@ button {
 
 .hs-listings__name {
   display: block;
+  font-family: var(--hs-font-serif);
   font-weight: 500;
 }
 

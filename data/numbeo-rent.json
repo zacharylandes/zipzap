@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-16T05:20:00.000Z",
+  "generatedAt": "2026-08-16T16:50:00.000Z",
   "source": "https://www.numbeo.com/property-investment/",
   "description": "1 Bedroom Apartment Outside of City Centre (fallback: in City Centre), monthly",
   "entries": {
@@ -31,6 +31,20 @@
     "cartagena": { "monthlyRent": 1830661.22, "currency": "COP", "numbeoCity": "Cartagena", "label": "Cartagena" },
     "bucaramanga": { "monthlyRent": 1066666.67, "currency": "COP", "numbeoCity": "Bucaramanga", "label": "Bucaramanga" },
     "pereira": { "monthlyRent": 1600000, "currency": "COP", "numbeoCity": "Pereira", "label": "Pereira" },
-    "santiago": { "monthlyRent": 368333.33, "currency": "CLP", "numbeoCity": "Santiago", "label": "Santiago" }
+    "santiago": { "monthlyRent": 368333.33, "currency": "CLP", "numbeoCity": "Santiago", "label": "Santiago" },
+    "capital-federal": { "monthlyRent": 521.64, "currency": "USD", "numbeoCity": "Buenos-Aires", "label": "Buenos Aires (CABA)" },
+    "cordoba": { "monthlyRent": 304.52, "currency": "USD", "numbeoCity": "Cordoba", "label": "Córdoba" },
+    "rosario": { "monthlyRent": 350, "currency": "USD", "numbeoCity": "Rosario", "label": "Rosario" },
+    "mendoza": { "monthlyRent": 325, "currency": "USD", "numbeoCity": "Mendoza", "label": "Mendoza" },
+    "la-plata": { "monthlyRent": 480, "currency": "USD", "numbeoCity": "La-Plata", "label": "La Plata" },
+    "mar-del-plata": { "monthlyRent": 320, "currency": "USD", "numbeoCity": "Mar-del-Plata", "label": "Mar del Plata" },
+    "salta": { "monthlyRent": 280, "currency": "USD", "numbeoCity": "Salta", "label": "Salta" },
+    "tucuman": { "monthlyRent": 290, "currency": "USD", "numbeoCity": "Tucuman", "label": "San Miguel de Tucumán" },
+    "lima": { "monthlyRent": 401.68, "currency": "USD", "numbeoCity": "Lima", "label": "Lima" },
+    "arequipa": { "monthlyRent": 320, "currency": "USD", "numbeoCity": "Arequipa", "label": "Arequipa" },
+    "cusco": { "monthlyRent": 350, "currency": "USD", "numbeoCity": "Cusco", "label": "Cusco" },
+    "trujillo": { "monthlyRent": 300, "currency": "USD", "numbeoCity": "Trujillo", "label": "Trujillo" },
+    "piura": { "monthlyRent": 290, "currency": "USD", "numbeoCity": "Piura", "label": "Piura" },
+    "chiclayo": { "monthlyRent": 270, "currency": "USD", "numbeoCity": "Chiclayo", "label": "Chiclayo" }
   }
 }

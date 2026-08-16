@@ -35,14 +35,19 @@ export function parseLocalizedNumber(raw: string): number | null {
 
 export function parseMercadoLibrePriceLabel(
   label: string,
-  countryCurrency: string,
+  country: CountryCode,
 ): { price: number | null; currency: string } {
+  const countryCurrency = COUNTRY_CURRENCY[country];
   const lower = label.toLowerCase();
   const currency = /d[oó]lar|usd/.test(lower)
     ? "USD"
-    : /peso|sol/.test(lower)
-      ? countryCurrency
-      : countryCurrency;
+    : /peso/.test(lower)
+      ? country === "AR"
+        ? "ARS"
+        : countryCurrency
+      : /sol/.test(lower)
+        ? "PEN"
+        : countryCurrency;
 
   const match = label.match(/[\d][\d.,]*/);
   if (!match) return { price: null, currency };
@@ -83,7 +88,7 @@ export function parseMercadoLibreHtml(
 
     const priceLabel = card.match(PRICE_ARIA_RE)?.[1];
     const { price, currency } = priceLabel
-      ? parseMercadoLibrePriceLabel(priceLabel, countryCurrency)
+      ? parseMercadoLibrePriceLabel(priceLabel, input.country as CountryCode)
       : { price: null, currency: countryCurrency };
 
     const title =

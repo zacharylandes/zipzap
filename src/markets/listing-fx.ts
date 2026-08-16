@@ -1,5 +1,18 @@
 import { convertAmount, fetchFxRate } from "@/markets/fx";
+import type { NumbeoRentEntry } from "@/markets/numbeo";
 import type { Listing } from "@/search/schema";
+
+export async function numbeoRentInLocalCurrency(
+  entry: NumbeoRentEntry | undefined,
+  localCurrency: string,
+): Promise<number | null> {
+  if (!entry?.monthlyRent || !(entry.monthlyRent > 0)) return null;
+  if (entry.currency === localCurrency) return entry.monthlyRent;
+
+  const rate = await fetchFxRate(entry.currency, localCurrency);
+  if (rate == null) return null;
+  return convertAmount(entry.monthlyRent, rate);
+}
 
 export async function applyLocalCurrency(
   listings: Listing[],

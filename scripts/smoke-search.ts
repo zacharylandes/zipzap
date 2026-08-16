@@ -7,7 +7,7 @@ const samples: SearchInput[] = [
   { country: "US", location: "Austin, TX", listingType: "sale", minPrice: 300000, maxPrice: 700000, bedrooms: 3 },
   { country: "CO", location: "bogota", listingType: "sale", maxPrice: 800_000_000, bedrooms: 2 },
   { country: "CL", location: "santiago", listingType: "sale", maxPrice: 200_000_000, bedrooms: 2 },
-  { country: "AR", location: "capital-federal", listingType: "sale", maxPrice: 200_000_000, bedrooms: 2 },
+  { country: "AR", location: "capital-federal", listingType: "sale", maxPrice: 500_000, bedrooms: 2 },
   { country: "PE", location: "lima", listingType: "sale", maxPrice: 800_000, bedrooms: 2 },
 ];
 

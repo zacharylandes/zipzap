@@ -214,8 +214,9 @@ describe("normalizeCurrency", () => {
     expect(normalizeCurrency("MN", "MXN")).toBe("MXN");
     expect(normalizeCurrency("MN$", "MXN")).toBe("MXN");
     expect(normalizeCurrency("$", "USD")).toBe("USD");
+    expect(normalizeCurrency("$", "USD", "AR")).toBe("ARS");
     expect(normalizeCurrency("$", "ARS")).toBe("ARS");
-    expect(normalizeCurrency("U$S", "ARS")).toBe("USD");
+    expect(normalizeCurrency("U$S", "USD", "AR")).toBe("USD");
     expect(normalizeCurrency("€", "EUR")).toBe("EUR");
   });
 
