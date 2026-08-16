@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fincaraizAdapter } from "@/search/adapters/fincaraiz";
-import { idealistaAdapter } from "@/search/adapters/idealista";
+import { pisosAdapter } from "@/search/adapters/pisos";
 import { inmuebles24Adapter } from "@/search/adapters/inmuebles24";
 import { mercadolibreInmueblesAdapter } from "@/search/adapters/mercadolibre-inmuebles";
 import { LISTING_LOCATIONS } from "@/search/locations";
@@ -27,12 +27,12 @@ describe("LISTING_LOCATIONS", () => {
 
     const es = LISTING_LOCATIONS.ES[0]!;
     expect(
-      idealistaAdapter.buildSearchUrl({
+      pisosAdapter.buildSearchUrl({
         country: "ES",
         location: es.location,
         listingType: "sale",
       }),
-    ).toContain(`idealista.com/venta-viviendas/${es.location}/`);
+    ).toContain("pisos.com/venta/pisos-madrid/");
 
     const co = LISTING_LOCATIONS.CO[0]!;
     expect(

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { inmuebles24Adapter } from "@/search/adapters/inmuebles24";
-import { idealistaAdapter } from "@/search/adapters/idealista";
+import { pisosAdapter } from "@/search/adapters/pisos";
 import { realtorAdapter } from "@/search/adapters/realtor";
 import { fincaraizAdapter } from "@/search/adapters/fincaraiz";
 import { mercadolibreInmueblesAdapter, ML_MIN_PROPERTY_AGE_FILTER } from "@/search/adapters/mercadolibre-inmuebles";
@@ -25,17 +25,39 @@ describe("portal URL builders", () => {
     ).toContain("inmuebles24.com/inmuebles-en-renta-en-ciudad-de-mexico.html");
   });
 
-  it("builds Idealista URL", () => {
+  it("builds Pisos.com URL from curated Spain slugs", () => {
     expect(
-      idealistaAdapter.buildSearchUrl({
+      pisosAdapter.buildSearchUrl({
         country: "ES",
-        location: "Madrid",
+        location: "madrid-madrid",
         listingType: "sale",
         maxPrice: 400000,
       }),
-    ).toBe(
-      "https://www.idealista.com/venta-viviendas/madrid-madrid/con-precio-hasta_400000/",
-    );
+    ).toBe("https://www.pisos.com/venta/pisos-madrid/hasta-400000/");
+  });
+
+  it("maps Palma, A Coruña, and San Sebastián to working Pisos slugs", () => {
+    expect(
+      pisosAdapter.buildSearchUrl({
+        country: "ES",
+        location: "palma-de-mallorca-balears-illes",
+        listingType: "sale",
+      }),
+    ).toBe("https://www.pisos.com/venta/pisos-palma_de_mallorca/");
+    expect(
+      pisosAdapter.buildSearchUrl({
+        country: "ES",
+        location: "a-coruna-a-coruna",
+        listingType: "sale",
+      }),
+    ).toBe("https://www.pisos.com/venta/pisos-a_coruna/");
+    expect(
+      pisosAdapter.buildSearchUrl({
+        country: "ES",
+        location: "donostia-san-sebastian-gipuzkoa",
+        listingType: "sale",
+      }),
+    ).toBe("https://www.pisos.com/venta/pisos-donostia_san_sebastian/");
   });
 
   it("builds Realtor URL", () => {

@@ -3,7 +3,7 @@ const SOURCES = [
   "Zillow ZHVI",
   "Zillow ZORI",
   "Numbeo",
-  "Idealista",
+  "Pisos.com",
   "Inmuebles24",
   "Mercado Libre",
   "Fincaraiz",

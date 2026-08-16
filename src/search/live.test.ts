@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runSearch } from "@/search/search";
-import type { CountryCode, SearchInput } from "@/search/schema";
+import { COUNTRY_CURRENCY, type CountryCode, type SearchInput } from "@/search/schema";
 
 /**
  * Live end-to-end verification against real portals via Firecrawl.
@@ -24,6 +24,10 @@ const cases: Case[] = [
     name: "United States / Realtor.com",
     input: { country: "US", location: "Austin, TX", listingType: "sale", maxPrice: 700000 },
   },
+  {
+    name: "Spain / Pisos.com",
+    input: { country: "ES", location: "madrid-madrid", listingType: "sale", maxPrice: 400_000 },
+  },
 ];
 
 describeLive("live search returns real listings", () => {
@@ -43,9 +47,7 @@ describeLive("live search returns real listings", () => {
       for (const listing of result.listings) {
         expect(listing.title.length).toBeGreaterThan(0);
         expect(listing.url).toMatch(/^https?:\/\//);
-        expect(listing.currency).toBe(
-          input.country === "US" ? "USD" : "MXN",
-        );
+        expect(listing.currency).toBe(COUNTRY_CURRENCY[input.country]);
       }
     },
     180_000,

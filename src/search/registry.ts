@@ -1,8 +1,8 @@
 import { facebookAdapter } from "@/search/adapters/facebook";
 import { fincaraizAdapter } from "@/search/adapters/fincaraiz";
-import { idealistaAdapter } from "@/search/adapters/idealista";
 import { inmuebles24Adapter } from "@/search/adapters/inmuebles24";
 import { mercadolibreInmueblesAdapter } from "@/search/adapters/mercadolibre-inmuebles";
+import { pisosAdapter } from "@/search/adapters/pisos";
 import { realtorAdapter } from "@/search/adapters/realtor";
 import type { SourceAdapter } from "@/search/adapters/types";
 import type { CountryCode } from "@/search/schema";
@@ -10,7 +10,7 @@ import { getSupportedCountries as supportedCountries } from "@/search/supported-
 
 const MVP_ADAPTERS: SourceAdapter[] = [
   inmuebles24Adapter,
-  idealistaAdapter,
+  pisosAdapter,
   realtorAdapter,
   fincaraizAdapter,
   mercadolibreInmueblesAdapter,
