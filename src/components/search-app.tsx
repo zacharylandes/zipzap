@@ -125,8 +125,8 @@ export function SearchApp({ query }: SearchAppProps) {
       <SourceMarquee />
 
       <section className="hs-section" id="search">
-        <div className="hs-content">
-          <Reveal>
+        <div className="hs-content hs-scan">
+          <Reveal className="hs-scan__intro">
             <p className="hs-eyebrow">The scan</p>
             <h2 className="hs-heading">A search that&apos;s <em>unique to you</em></h2>
             <p className="hs-copy">

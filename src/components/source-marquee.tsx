@@ -16,7 +16,7 @@ export function SourceMarquee() {
   return (
     <section className="hs-insurance" aria-labelledby="sources-title">
       <div className="hs-insurance__inner">
-        <div>
+        <div className="hs-insurance__copy">
           <h2 className="hs-insurance__title" id="sources-title">
             We pull from the portals and datasets that price real homes
           </h2>
