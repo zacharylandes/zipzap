@@ -4,6 +4,8 @@ export type ListingLocation = {
   label: string;
   /** Exact value passed to portal URL builders (slug or city-province slug). */
   location: string;
+  /** Numbeo property-investment city slug (path segment after /in/). */
+  numbeoCity: string;
   region: string;
 };
 
@@ -13,71 +15,82 @@ export const LISTING_LOCATIONS: Record<
   ListingLocation[]
 > = {
   MX: [
-    { label: "Ciudad de México", location: "ciudad-de-mexico", region: "Ciudad de México" },
-    { label: "Guadalajara", location: "guadalajara", region: "Jalisco" },
-    { label: "Monterrey", location: "monterrey", region: "Nuevo León" },
-    { label: "Querétaro", location: "queretaro", region: "Querétaro" },
-    { label: "León", location: "leon", region: "Guanajuato" },
-    { label: "Puebla", location: "puebla", region: "Puebla" },
-    { label: "Tijuana", location: "tijuana", region: "Baja California" },
-    { label: "Mérida", location: "merida", region: "Yucatán" },
-    { label: "Cancún", location: "cancun", region: "Quintana Roo" },
-    { label: "Playa del Carmen", location: "playa-del-carmen", region: "Quintana Roo" },
-    { label: "Toluca", location: "toluca", region: "Estado de México" },
-    { label: "Aguascalientes", location: "aguascalientes", region: "Aguascalientes" },
-    { label: "San Miguel de Allende", location: "san-miguel-de-allende", region: "Guanajuato" },
-    { label: "Cuernavaca", location: "cuernavaca", region: "Morelos" },
-    { label: "Oaxaca", location: "oaxaca-de-juarez", region: "Oaxaca" },
-    { label: "Acapulco", location: "acapulco", region: "Guerrero" },
-    { label: "Veracruz", location: "veracruz", region: "Veracruz" },
-    { label: "Hermosillo", location: "hermosillo", region: "Sonora" },
-    { label: "Chihuahua", location: "chihuahua", region: "Chihuahua" },
-    { label: "Saltillo", location: "saltillo", region: "Coahuila" },
-    { label: "Mazatlán", location: "mazatlan", region: "Sinaloa" },
-    { label: "Puerto Vallarta", location: "puerto-vallarta", region: "Jalisco" },
-    { label: "Los Cabos", location: "los-cabos", region: "Baja California Sur" },
+    { label: "Ciudad de México", location: "ciudad-de-mexico", numbeoCity: "Mexico-City", region: "Ciudad de México" },
+    { label: "Guadalajara", location: "guadalajara", numbeoCity: "Guadalajara", region: "Jalisco" },
+    { label: "Monterrey", location: "monterrey", numbeoCity: "Monterrey", region: "Nuevo León" },
+    { label: "Querétaro", location: "queretaro", numbeoCity: "Queretaro", region: "Querétaro" },
+    { label: "León", location: "leon", numbeoCity: "Leon", region: "Guanajuato" },
+    { label: "Puebla", location: "puebla", numbeoCity: "Puebla", region: "Puebla" },
+    { label: "Tijuana", location: "tijuana", numbeoCity: "Tijuana", region: "Baja California" },
+    { label: "Mérida", location: "merida", numbeoCity: "Merida", region: "Yucatán" },
+    { label: "Cancún", location: "cancun", numbeoCity: "Cancun", region: "Quintana Roo" },
+    { label: "Playa del Carmen", location: "playa-del-carmen", numbeoCity: "Playa-del-Carmen", region: "Quintana Roo" },
+    { label: "Toluca", location: "toluca", numbeoCity: "Toluca", region: "Estado de México" },
+    { label: "Aguascalientes", location: "aguascalientes", numbeoCity: "Aguascalientes", region: "Aguascalientes" },
+    { label: "San Miguel de Allende", location: "san-miguel-de-allende", numbeoCity: "San-Miguel-de-Allende", region: "Guanajuato" },
+    { label: "Cuernavaca", location: "cuernavaca", numbeoCity: "Cuernavaca", region: "Morelos" },
+    { label: "Oaxaca", location: "oaxaca-de-juarez", numbeoCity: "Oaxaca", region: "Oaxaca" },
+    { label: "Acapulco", location: "acapulco", numbeoCity: "Acapulco", region: "Guerrero" },
+    { label: "Veracruz", location: "veracruz", numbeoCity: "Veracruz", region: "Veracruz" },
+    { label: "Hermosillo", location: "hermosillo", numbeoCity: "Hermosillo", region: "Sonora" },
+    { label: "Chihuahua", location: "chihuahua", numbeoCity: "Chihuahua", region: "Chihuahua" },
+    { label: "Saltillo", location: "saltillo", numbeoCity: "Saltillo", region: "Coahuila" },
+    { label: "Mazatlán", location: "mazatlan", numbeoCity: "Mazatlan", region: "Sinaloa" },
+    { label: "Puerto Vallarta", location: "puerto-vallarta", numbeoCity: "Puerto-Vallarta", region: "Jalisco" },
+    { label: "Los Cabos", location: "los-cabos", numbeoCity: "Los-Cabos", region: "Baja California Sur" },
   ],
   ES: [
-    { label: "Madrid", location: "madrid-madrid", region: "Madrid" },
-    { label: "Barcelona", location: "barcelona-barcelona", region: "Cataluña" },
-    { label: "Valencia", location: "valencia-valencia", region: "Valencia" },
-    { label: "Sevilla", location: "sevilla-sevilla", region: "Andalucía" },
-    { label: "Málaga", location: "malaga-malaga", region: "Andalucía" },
-    { label: "Zaragoza", location: "zaragoza-zaragoza", region: "Aragón" },
-    { label: "Bilbao", location: "bilbao-bizkaia", region: "País Vasco" },
-    { label: "Palma de Mallorca", location: "palma-de-mallorca-balears-illes", region: "Baleares" },
-    { label: "Alicante", location: "alicante-alacant-alicante", region: "Valencia" },
-    { label: "Murcia", location: "murcia-murcia", region: "Murcia" },
-    { label: "Córdoba", location: "cordoba-cordoba", region: "Andalucía" },
-    { label: "Granada", location: "granada-granada", region: "Andalucía" },
-    { label: "Vigo", location: "vigo-pontevedra", region: "Galicia" },
-    { label: "A Coruña", location: "a-coruna-a-coruna", region: "Galicia" },
-    { label: "San Sebastián", location: "donostia-san-sebastian-gipuzkoa", region: "País Vasco" },
+    { label: "Madrid", location: "madrid-madrid", numbeoCity: "Madrid", region: "Madrid" },
+    { label: "Barcelona", location: "barcelona-barcelona", numbeoCity: "Barcelona", region: "Cataluña" },
+    { label: "Valencia", location: "valencia-valencia", numbeoCity: "Valencia", region: "Valencia" },
+    { label: "Sevilla", location: "sevilla-sevilla", numbeoCity: "Sevilla", region: "Andalucía" },
+    { label: "Málaga", location: "malaga-malaga", numbeoCity: "Malaga", region: "Andalucía" },
+    { label: "Zaragoza", location: "zaragoza-zaragoza", numbeoCity: "Zaragoza", region: "Aragón" },
+    { label: "Bilbao", location: "bilbao-bizkaia", numbeoCity: "Bilbao", region: "País Vasco" },
+    { label: "Palma de Mallorca", location: "palma-de-mallorca-balears-illes", numbeoCity: "Palma-de-Mallorca", region: "Baleares" },
+    { label: "Alicante", location: "alicante-alacant-alicante", numbeoCity: "Alicante", region: "Valencia" },
+    { label: "Murcia", location: "murcia-murcia", numbeoCity: "Murcia", region: "Murcia" },
+    { label: "Córdoba", location: "cordoba-cordoba", numbeoCity: "Cordoba", region: "Andalucía" },
+    { label: "Granada", location: "granada-granada", numbeoCity: "Granada", region: "Andalucía" },
+    { label: "Vigo", location: "vigo-pontevedra", numbeoCity: "Vigo", region: "Galicia" },
+    { label: "A Coruña", location: "a-coruna-a-coruna", numbeoCity: "A-Coruna", region: "Galicia" },
+    { label: "San Sebastián", location: "donostia-san-sebastian-gipuzkoa", numbeoCity: "San-Sebastian", region: "País Vasco" },
   ],
   CO: [
-    { label: "Bogotá", location: "bogota", region: "Cundinamarca" },
-    { label: "Medellín", location: "medellin", region: "Antioquia" },
-    { label: "Cali", location: "cali", region: "Valle del Cauca" },
-    { label: "Barranquilla", location: "barranquilla", region: "Atlántico" },
-    { label: "Cartagena", location: "cartagena", region: "Bolívar" },
-    { label: "Bucaramanga", location: "bucaramanga", region: "Santander" },
-    { label: "Pereira", location: "pereira", region: "Risaralda" },
-    { label: "Manizales", location: "manizales", region: "Caldas" },
-    { label: "Cúcuta", location: "cucuta", region: "Norte de Santander" },
-    { label: "Santa Marta", location: "santa-marta", region: "Magdalena" },
+    { label: "Bogotá", location: "bogota", numbeoCity: "Bogota", region: "Cundinamarca" },
+    { label: "Medellín", location: "medellin", numbeoCity: "Medellin", region: "Antioquia" },
+    { label: "Cali", location: "cali", numbeoCity: "Cali", region: "Valle del Cauca" },
+    { label: "Barranquilla", location: "barranquilla", numbeoCity: "Barranquilla", region: "Atlántico" },
+    { label: "Cartagena", location: "cartagena", numbeoCity: "Cartagena", region: "Bolívar" },
+    { label: "Bucaramanga", location: "bucaramanga", numbeoCity: "Bucaramanga", region: "Santander" },
+    { label: "Pereira", location: "pereira", numbeoCity: "Pereira", region: "Risaralda" },
+    { label: "Manizales", location: "manizales", numbeoCity: "Manizales", region: "Caldas" },
+    { label: "Cúcuta", location: "cucuta", numbeoCity: "Cucuta", region: "Norte de Santander" },
+    { label: "Santa Marta", location: "santa-marta", numbeoCity: "Santa-Marta", region: "Magdalena" },
   ],
   CL: [
-    { label: "Santiago", location: "santiago", region: "Región Metropolitana" },
-    { label: "Viña del Mar", location: "vina-del-mar", region: "Valparaíso" },
-    { label: "Valparaíso", location: "valparaiso", region: "Valparaíso" },
-    { label: "Concepción", location: "concepcion", region: "Biobío" },
-    { label: "La Serena", location: "la-serena", region: "Coquimbo" },
-    { label: "Antofagasta", location: "antofagasta", region: "Antofagasta" },
-    { label: "Temuco", location: "temuco", region: "La Araucanía" },
-    { label: "Puerto Montt", location: "puerto-montt", region: "Los Lagos" },
-    { label: "Rancagua", location: "rancagua", region: "O'Higgins" },
+    { label: "Santiago", location: "santiago", numbeoCity: "Santiago", region: "Región Metropolitana" },
+    { label: "Viña del Mar", location: "vina-del-mar", numbeoCity: "Vina-del-Mar", region: "Valparaíso" },
+    { label: "Valparaíso", location: "valparaiso", numbeoCity: "Valparaiso", region: "Valparaíso" },
+    { label: "Concepción", location: "concepcion", numbeoCity: "Concepcion", region: "Biobío" },
+    { label: "La Serena", location: "la-serena", numbeoCity: "La-Serena", region: "Coquimbo" },
+    { label: "Antofagasta", location: "antofagasta", numbeoCity: "Antofagasta", region: "Antofagasta" },
+    { label: "Temuco", location: "temuco", numbeoCity: "Temuco", region: "La Araucanía" },
+    { label: "Puerto Montt", location: "puerto-montt", numbeoCity: "Puerto-Montt", region: "Los Lagos" },
+    { label: "Rancagua", location: "rancagua", numbeoCity: "Rancagua", region: "O'Higgins" },
   ],
 };
+
+export function allListingLocations(): ListingLocation[] {
+  return Object.values(LISTING_LOCATIONS).flat();
+}
+
+export function findListingLocation(
+  country: CountryCode,
+  location: string,
+): ListingLocation | undefined {
+  return listingLocationsForCountry(country).find((entry) => entry.location === location);
+}
 
 export function listingLocationsForCountry(country: CountryCode): ListingLocation[] {
   if (country === "US" || country === "IT") return [];

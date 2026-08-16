@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { enrichListings, sortSearchListings } from "@/markets/enrich";
+import { enrichListings, enrichListingsWithNumbeo, sortSearchListings } from "@/markets/enrich";
 import { grossYield, type MarketRow } from "@/markets/rank";
 import type { Listing } from "@/search/schema";
 
@@ -39,6 +39,7 @@ describe("enrichListings", () => {
       market,
     );
     expect(enriched?.estimatedMonthlyRent).toBe(1_400);
+    expect(enriched?.rentEstimateSource).toBe("zori");
     expect(enriched?.grossYield).toBeCloseTo((1_400 * 12) / 120_000);
     expect(enriched?.crimeVsNational).toBeCloseTo(250 / 370);
     expect(enriched?.zip).toBe("73103");
@@ -51,6 +52,18 @@ describe("enrichListings", () => {
     );
     expect(enriched?.estimatedMonthlyRent).toBe(1_400);
     expect(enriched?.grossYield).toBeNull();
+  });
+});
+
+describe("enrichListingsWithNumbeo", () => {
+  it("estimates gross yield on sale listings from Numbeo rent", () => {
+    const [enriched] = enrichListingsWithNumbeo(
+      [listing({ id: "mx", title: "Condo", price: 2_000_000, currency: "MXN" })],
+      10_000,
+    );
+    expect(enriched?.estimatedMonthlyRent).toBe(10_000);
+    expect(enriched?.rentEstimateSource).toBe("numbeo");
+    expect(enriched?.grossYield).toBeCloseTo(0.06);
   });
 });
 

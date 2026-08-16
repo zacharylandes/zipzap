@@ -81,7 +81,9 @@ export function ListingCard({ listing }: { listing: Listing }) {
                     style: "currency",
                     currency: listing.currency,
                     maximumFractionDigits: 0,
-                  }).format(listing.estimatedMonthlyRent)}/mo`
+                  }).format(listing.estimatedMonthlyRent)}/mo${
+                    listing.rentEstimateSource === "numbeo" ? " (Numbeo)" : ""
+                  }`
                 : ""}
             </p>
           ) : null}

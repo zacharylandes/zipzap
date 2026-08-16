@@ -10,9 +10,24 @@ export function enrichListings(
     ...listing,
     zip: market.zip,
     estimatedMonthlyRent: market.zori,
+    rentEstimateSource: "zori",
     grossYield:
       listing.price != null ? grossYield(market.zori, listing.price) : null,
     crimeVsNational: market.crimeVsNational,
+  }));
+}
+
+export function enrichListingsWithNumbeo(
+  listings: Listing[],
+  monthlyRent: number | null | undefined,
+): Listing[] {
+  if (monthlyRent == null || !(monthlyRent > 0)) return listings;
+  return listings.map((listing) => ({
+    ...listing,
+    estimatedMonthlyRent: monthlyRent,
+    rentEstimateSource: "numbeo",
+    grossYield:
+      listing.price != null ? grossYield(monthlyRent, listing.price) : null,
   }));
 }
 

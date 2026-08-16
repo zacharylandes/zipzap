@@ -2,8 +2,9 @@ import { getCached, setCached } from "@/search/cache";
 import { dedupeListings } from "@/search/dedupe";
 import { filterListingsBySearchInput } from "@/search/filters";
 import { getAdaptersForCountry } from "@/search/registry";
-import { enrichListings } from "@/markets/enrich";
+import { enrichListings, enrichListingsWithNumbeo } from "@/markets/enrich";
 import { findMarketByZip, loadMarketsFile } from "@/markets/load";
+import { findNumbeoRent } from "@/markets/numbeo";
 import {
   COUNTRY_CURRENCY,
   SOURCE_TIMEOUT_MS,
@@ -108,7 +109,13 @@ export async function runSearch(input: SearchInput): Promise<SearchResponse> {
   } catch {
     market = undefined;
   }
-  const enriched = enrichListings(dedupeListings(listings), market);
+  let enriched = enrichListings(dedupeListings(listings), market);
+  if (input.country !== "US" && input.listingType === "sale") {
+    enriched = enrichListingsWithNumbeo(
+      enriched,
+      findNumbeoRent(input.location.trim().toLowerCase())?.monthlyRent,
+    );
+  }
 
   const response: SearchResponse = finalizeResponse(input, {
     listings: enriched,

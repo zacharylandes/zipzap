@@ -116,7 +116,7 @@ export function SearchApp({ query }: SearchAppProps) {
           <p className="hs-hero__sub">
             {isUsInvestorScan
               ? "US ZIPs ranked by typical rent versus typical home value. Counties above average violent crime are hidden."
-              : `Live sale and rent listings scraped from the primary portal for ${countryLabel}.`}
+              : `Live sale and rent listings scraped from the primary portal for ${countryLabel}. Sale searches show gross yield using Numbeo 1BR rent.`}
           </p>
         </div>
       </section>

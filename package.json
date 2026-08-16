@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "smoke": "tsx scripts/smoke-search.ts",
-    "data:refresh": "tsx scripts/refresh-market-data.ts"
+    "data:refresh": "tsx scripts/refresh-market-data.ts",
+    "data:refresh-numbeo": "tsx scripts/refresh-numbeo-rent.ts"
   },
   "dependencies": {
     "firecrawl": "^4.30.1",

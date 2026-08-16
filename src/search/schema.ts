@@ -86,6 +86,7 @@ export const listingSchema = z.object({
   estimatedMonthlyRent: z.number().nullable().optional(),
   grossYield: z.number().nullable().optional(),
   crimeVsNational: z.number().nullable().optional(),
+  rentEstimateSource: z.enum(["zori", "numbeo"]).optional(),
 });
 
 export type Listing = z.infer<typeof listingSchema>;
