@@ -16,6 +16,9 @@ import {
 
 type MercadoLibreCountry = "AR" | "CL" | "PE";
 
+/** MercadoLibre Antigüedad: exclude "a estrenar" (>= 1 year). */
+export const ML_MIN_PROPERTY_AGE_FILTER = "_NoIndex_True_PROPERTY*AGE_1años-*";
+
 const ML_SITES: Record<
   MercadoLibreCountry,
   { host: string; rentOp: string; saleOp: string; useDormitoriosPath: boolean }
@@ -71,7 +74,7 @@ export function mercadoLibreInmueblesOrigin(input: SearchInput): string {
 }
 
 function buildFilterSegments(input: SearchInput, includePrice: boolean): string {
-  const segments: string[] = [];
+  const segments: string[] = [ML_MIN_PROPERTY_AGE_FILTER];
 
   if (includePrice) {
     if (input.minPrice != null && input.maxPrice != null) {
@@ -96,7 +99,6 @@ export function buildMercadoLibreInmueblesUrl(input: SearchInput): string {
   const slug = slugifyLocation(input.location);
   const op = input.listingType === "rent" ? site.rentOp : site.saleOp;
   const includePrice = country !== "AR";
-  const filters = buildFilterSegments(input, includePrice);
 
   const parts = [`https://${site.host}/departamentos`, op];
   if (site.useDormitoriosPath && input.bedrooms != null) {
@@ -105,7 +107,7 @@ export function buildMercadoLibreInmueblesUrl(input: SearchInput): string {
   parts.push(slug);
 
   let url = `${parts.join("/")}/`;
-  if (filters) url += filters;
+  url += buildFilterSegments(input, includePrice);
   return url;
 }
 

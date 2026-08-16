@@ -3,7 +3,7 @@ import { inmuebles24Adapter } from "@/search/adapters/inmuebles24";
 import { idealistaAdapter } from "@/search/adapters/idealista";
 import { realtorAdapter } from "@/search/adapters/realtor";
 import { fincaraizAdapter } from "@/search/adapters/fincaraiz";
-import { mercadolibreInmueblesAdapter } from "@/search/adapters/mercadolibre-inmuebles";
+import { mercadolibreInmueblesAdapter, ML_MIN_PROPERTY_AGE_FILTER } from "@/search/adapters/mercadolibre-inmuebles";
 import { immobiliareAdapter } from "@/search/adapters/immobiliare";
 import {
   normalizeCurrency,
@@ -91,7 +91,9 @@ describe("portal URL builders", () => {
         location: "santiago",
         listingType: "sale",
       }),
-    ).toBe("https://inmuebles.mercadolibre.cl/departamentos/venta/santiago/");
+    ).toBe(
+      `https://inmuebles.mercadolibre.cl/departamentos/venta/santiago/${ML_MIN_PROPERTY_AGE_FILTER}`,
+    );
   });
 
   it("builds MercadoLibre Inmuebles URL for Argentina with filters", () => {
@@ -104,7 +106,7 @@ describe("portal URL builders", () => {
         bedrooms: 3,
       }),
     ).toBe(
-      "https://inmuebles.mercadolibre.com.ar/departamentos/venta/3-dormitorios/capital-federal/",
+      `https://inmuebles.mercadolibre.com.ar/departamentos/venta/3-dormitorios/capital-federal/${ML_MIN_PROPERTY_AGE_FILTER}`,
     );
   });
 
@@ -115,7 +117,9 @@ describe("portal URL builders", () => {
         location: "lima",
         listingType: "sale",
       }),
-    ).toBe("https://inmuebles.mercadolibre.com.pe/departamentos/venta/lima/");
+    ).toBe(
+      `https://inmuebles.mercadolibre.com.pe/departamentos/venta/lima/${ML_MIN_PROPERTY_AGE_FILTER}`,
+    );
   });
 
   it("builds Immobiliare URL", () => {
