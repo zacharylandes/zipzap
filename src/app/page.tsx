@@ -10,10 +10,7 @@ export default async function HomePage({
 
   return (
     <main>
-      <SearchApp
-        query={query}
-        facebookEnabled={process.env.HOUSE_SEARCH_ENABLE_FACEBOOK === "1"}
-      />
+      <SearchApp query={query} />
     </main>
   );
 }

@@ -4,24 +4,24 @@ import { describe, expect, it, vi } from "vitest";
 import { SearchForm } from "@/components/search-form";
 import { ListingCard } from "@/components/listing-card";
 import { SourceStatusList } from "@/components/source-status";
+import { LISTING_LOCATIONS } from "@/search/locations";
 
 describe("SearchForm", () => {
   it("serializes filters on submit", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    render(<SearchForm onSubmit={onSubmit} />);
+    render(<SearchForm country="MX" locations={LISTING_LOCATIONS.MX} onSubmit={onSubmit} />);
 
-    await user.selectOptions(screen.getByLabelText("Country"), "US");
-    await user.type(screen.getByLabelText("City or region"), "Austin, TX");
+    await user.selectOptions(screen.getByLabelText("City"), "guadalajara");
     await user.click(screen.getByRole("button", { name: "Sale" }));
-    await user.type(screen.getByLabelText("Minimum price in USD"), "200000");
+    await user.type(screen.getByLabelText("Minimum price in MXN"), "200000");
     await user.type(screen.getByLabelText("Bedrooms"), "3");
     await user.click(screen.getByRole("button", { name: "Search listings" }));
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
-        country: "US",
-        location: "Austin, TX",
+        country: "MX",
+        location: "guadalajara",
         listingType: "sale",
         minPrice: 200000,
         bedrooms: 3,

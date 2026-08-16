@@ -3,14 +3,13 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FacebookConnect } from "@/components/facebook-connect";
 import { MarketsPanel } from "@/components/markets-panel";
 import { PaginatedResultsGrid } from "@/components/paginated-results-grid";
 import { SearchForm } from "@/components/search-form";
 import { SiteNav } from "@/components/site-nav";
 import { SourceStatusList } from "@/components/source-status";
 import type { ListingSort } from "@/markets/enrich";
-import { homeHref, zipListingsHref, type MarketQuery } from "@/markets/query";
+import { homeHref, supportedCountryOptions, zipListingsHref, type MarketQuery } from "@/markets/query";
 import {
   DEFAULT_MAX_PRICE,
   DEFAULT_MIN_PRICE,
@@ -21,34 +20,34 @@ import {
   type MarketSort,
 } from "@/markets/rank";
 import { useSearchRequest } from "@/search/use-search-request";
-
-type Mode = "investor" | "browse";
+import { listingLocationsForCountry } from "@/search/locations";
 
 type SearchAppProps = {
   query: MarketQuery;
-  facebookEnabled?: boolean;
 };
 
-export function SearchApp({ query, facebookEnabled = false }: SearchAppProps) {
+const COUNTRY_OPTIONS = supportedCountryOptions();
+
+export function SearchApp({ query }: SearchAppProps) {
   const router = useRouter();
+  const country = query.country ?? "US";
   const minPrice = query.minPrice ?? DEFAULT_MIN_PRICE;
   const maxPrice = query.maxPrice ?? DEFAULT_MAX_PRICE;
   const crimeFilter: CrimeFilter = query.crimeFilter ?? "averageOrBetter";
   const state = query.state ?? "";
   const [sort, setSort] = useState<MarketSort>(query.sort ?? DEFAULT_MARKET_SORT);
   const [page, setPage] = useState(query.page ?? 1);
-
-  const [mode, setMode] = useState<Mode>("investor");
-  const [browseSort, setBrowseSort] = useState<ListingSort>("priceDesc");
-  const [browsePage, setBrowsePage] = useState(1);
   const [markets, setMarkets] = useState<MarketRow[]>([]);
   const [states, setStates] = useState<string[]>([]);
   const [marketsTotal, setMarketsTotal] = useState(0);
-  const [marketsLoading, setMarketsLoading] = useState(true);
-  const { loading, elapsedSec, error, result, run } = useSearchRequest();
+  const [marketsLoading, setMarketsLoading] = useState(country === "US");
   const [marketsError, setMarketsError] = useState<string | null>(null);
+  const [listingSort, setListingSort] = useState<ListingSort>("priceDesc");
+  const [listingPage, setListingPage] = useState(1);
+  const { loading, elapsedSec, error, result, run } = useSearchRequest();
 
   useEffect(() => {
+    if (country !== "US") return;
     const params = new URLSearchParams({
       minPrice: String(minPrice),
       maxPrice: String(maxPrice),
@@ -56,6 +55,7 @@ export function SearchApp({ query, facebookEnabled = false }: SearchAppProps) {
     });
     if (state) params.set("state", state);
     const controller = new AbortController();
+    setMarketsLoading(true);
     fetch(`/api/markets?${params}`, { signal: controller.signal })
       .then(async (res) => {
         const data = await res.json();
@@ -73,15 +73,19 @@ export function SearchApp({ query, facebookEnabled = false }: SearchAppProps) {
         if (!controller.signal.aborted) setMarketsLoading(false);
       });
     return () => controller.abort();
-  }, [minPrice, maxPrice, crimeFilter, state]);
+  }, [country, minPrice, maxPrice, crimeFilter, state]);
 
   const sortedMarkets = useMemo(() => sortMarkets(markets, sort), [markets, sort]);
 
   function replaceQuery(next: Partial<MarketQuery>) {
-    setMarketsLoading(true);
+    if ((next.country ?? country) === "US") {
+      setMarketsLoading(true);
+    }
     setPage(1);
+    setListingPage(1);
     router.replace(
       homeHref({
+        country: next.country ?? country,
         minPrice: next.minPrice ?? minPrice,
         maxPrice: next.maxPrice ?? maxPrice,
         crimeFilter: next.crimeFilter ?? crimeFilter,
@@ -91,7 +95,9 @@ export function SearchApp({ query, facebookEnabled = false }: SearchAppProps) {
     );
   }
 
-  const displayError = mode === "browse" ? error : marketsError;
+  const countryLabel = COUNTRY_OPTIONS.find((option) => option.code === country)?.label ?? country;
+  const isUsInvestorScan = country === "US";
+  const listingLocations = useMemo(() => listingLocationsForCountry(country), [country]);
 
   return (
     <div className="hs-app">
@@ -105,38 +111,34 @@ export function SearchApp({ query, facebookEnabled = false }: SearchAppProps) {
             </Link>
           </p>
           <h1 className="hs-hero__title">
-            {mode === "investor" ? "Highest rent for the price" : "Find homes across borders"}
+            {isUsInvestorScan ? "Highest rent for the price" : `Listings in ${countryLabel}`}
           </h1>
           <p className="hs-hero__sub">
-            {mode === "investor"
+            {isUsInvestorScan
               ? "US ZIPs ranked by typical rent versus typical home value. Counties above average violent crime are hidden."
-              : "Search one primary portal per country on demand. No preloading — results load only when you ask."}
+              : `Live sale and rent listings scraped from the primary portal for ${countryLabel}.`}
           </p>
         </div>
       </section>
 
       <section className="hs-section">
         <div className="hs-content">
-          <div className="hs-tabs hs-mode-tabs" role="tablist" aria-label="Search mode">
-            <button
-              type="button"
-              className={mode === "investor" ? "is-active" : ""}
-              aria-pressed={mode === "investor"}
-              onClick={() => setMode("investor")}
+          <label className="hs-field hs-field--country">
+            <span>Country</span>
+            <select
+              value={country}
+              onChange={(e) => replaceQuery({ country: e.target.value as MarketQuery["country"] })}
+              aria-label="Country"
             >
-              Investor scan
-            </button>
-            <button
-              type="button"
-              className={mode === "browse" ? "is-active" : ""}
-              aria-pressed={mode === "browse"}
-              onClick={() => setMode("browse")}
-            >
-              Browse listings
-            </button>
-          </div>
+              {COUNTRY_OPTIONS.map((option) => (
+                <option key={option.code} value={option.code}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-          {mode === "investor" ? (
+          {isUsInvestorScan ? (
             <MarketsPanel
               markets={sortedMarkets}
               states={states}
@@ -150,6 +152,7 @@ export function SearchApp({ query, facebookEnabled = false }: SearchAppProps) {
               total={marketsTotal}
               zipHref={(market) =>
                 zipListingsHref(market.zip, {
+                  country,
                   minPrice,
                   maxPrice,
                   crimeFilter,
@@ -166,18 +169,20 @@ export function SearchApp({ query, facebookEnabled = false }: SearchAppProps) {
               }}
               onPage={setPage}
             />
-          ) : null}
-          {mode === "browse" ? (
-            <SearchForm onSubmit={run} loading={loading} />
-          ) : null}
-          {mode === "browse" && facebookEnabled ? <FacebookConnect enabled /> : null}
-          {displayError ? (
-            <p className="hs-error" role="alert">
-              {displayError}
-            </p>
-          ) : null}
-          {mode === "browse" ? (
+          ) : (
             <>
+              <SearchForm
+                key={country}
+                country={country}
+                locations={listingLocations}
+                onSubmit={run}
+                loading={loading}
+              />
+              {error ? (
+                <p className="hs-error" role="alert">
+                  {error}
+                </p>
+              ) : null}
               {result ? <SourceStatusList sources={result.sources} /> : null}
               <PaginatedResultsGrid
                 listings={result?.listings ?? []}
@@ -188,15 +193,20 @@ export function SearchApp({ query, facebookEnabled = false }: SearchAppProps) {
                     ? "No listings matched this search."
                     : "Submit a search to load live listings."
                 }
-                sort={browseSort}
-                page={browsePage}
+                sort={listingSort}
+                page={listingPage}
                 onSort={(value) => {
-                  setBrowseSort(value);
-                  setBrowsePage(1);
+                  setListingSort(value);
+                  setListingPage(1);
                 }}
-                onPage={setBrowsePage}
+                onPage={setListingPage}
               />
             </>
+          )}
+          {isUsInvestorScan && marketsError ? (
+            <p className="hs-error" role="alert">
+              {marketsError}
+            </p>
           ) : null}
         </div>
       </section>

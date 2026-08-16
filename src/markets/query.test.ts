@@ -11,6 +11,7 @@ import type { MarketsFile } from "@/markets/file";
 describe("parseMarketQuery", () => {
   it("defaults to $90k–$240k and average-or-better crime", () => {
     expect(parseMarketQuery(new URLSearchParams())).toEqual({
+      country: "US",
       minPrice: 90_000,
       maxPrice: 240_000,
       crimeFilter: "averageOrBetter",
@@ -35,6 +36,7 @@ describe("parseMarketQuery", () => {
       minPopulation: "5000",
     });
     expect(parseMarketQuery(params)).toEqual({
+      country: "US",
       minPrice: 90_000,
       maxPrice: 350_000,
       crimeFilter: "excludeHigh",
@@ -57,6 +59,11 @@ describe("zip and home hrefs", () => {
     ).toBe("/zips/73103?minPrice=90000&maxPrice=240000&crimeFilter=averageOrBetter");
   });
 
+  it("parses supported country codes", () => {
+    expect(parseMarketQuery(new URLSearchParams({ country: "MX" })).country).toBe("MX");
+    expect(parseMarketQuery(new URLSearchParams({ country: "ZZ" })).country).toBe("US");
+  });
+
   it("builds a home URL that restores filters", () => {
     expect(
       homeHref({
@@ -66,6 +73,17 @@ describe("zip and home hrefs", () => {
         state: "MS",
       }),
     ).toBe("/?minPrice=90000&maxPrice=240000&crimeFilter=excludeHigh&state=MS");
+  });
+
+  it("includes country in home URL when not US", () => {
+    expect(
+      homeHref({
+        country: "MX",
+        minPrice: 90_000,
+        maxPrice: 240_000,
+        crimeFilter: "averageOrBetter",
+      }),
+    ).toBe("/?country=MX&minPrice=90000&maxPrice=240000&crimeFilter=averageOrBetter");
   });
 });
 

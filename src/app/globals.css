@@ -217,6 +217,11 @@ button {
   }
 }
 
+.hs-field--country {
+  max-width: 18rem;
+  margin-bottom: 1.25rem;
+}
+
 .hs-field {
   display: grid;
   gap: 0.4rem;

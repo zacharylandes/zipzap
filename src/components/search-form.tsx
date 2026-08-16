@@ -2,15 +2,15 @@
 
 import { type FormEvent, useMemo, useState } from "react";
 import {
-  COUNTRIES,
-  COUNTRY_CURRENCY,
-  COUNTRY_LABELS,
-  type CountryCode,
-  type ListingType,
-  type SearchInput,
-} from "@/search/schema";
+  defaultListingLocation,
+  groupListingLocations,
+  type ListingLocation,
+} from "@/search/locations";
+import { COUNTRY_CURRENCY, type CountryCode, type ListingType, type SearchInput } from "@/search/schema";
 
 type SearchFormProps = {
+  country: CountryCode;
+  locations: ListingLocation[];
   onSubmit: (input: SearchInput) => void;
   loading?: boolean;
 };
@@ -21,9 +21,8 @@ function optionalNumber(value: string): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
-export function SearchForm({ onSubmit, loading }: SearchFormProps) {
-  const [country, setCountry] = useState<CountryCode>("MX");
-  const [location, setLocation] = useState("");
+export function SearchForm({ country, locations, onSubmit, loading }: SearchFormProps) {
+  const [location, setLocation] = useState(defaultListingLocation(country));
   const [listingType, setListingType] = useState<ListingType>("rent");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -34,9 +33,11 @@ export function SearchForm({ onSubmit, loading }: SearchFormProps) {
 
   const currency = useMemo(() => COUNTRY_CURRENCY[country], [country]);
   const areaLabel = country === "US" ? "sq ft" : "m²";
+  const groups = useMemo(() => groupListingLocations(locations), [locations]);
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    if (!location) return;
     onSubmit({
       country,
       location,
@@ -53,31 +54,24 @@ export function SearchForm({ onSubmit, loading }: SearchFormProps) {
   return (
     <form className="hs-form" onSubmit={handleSubmit} aria-label="Housing search">
       <div className="hs-form__grid">
-        <label className="hs-field">
-          <span>Country</span>
-          <select
-            value={country}
-            onChange={(e) => setCountry(e.target.value as CountryCode)}
-            aria-label="Country"
-          >
-            {COUNTRIES.map((code) => (
-              <option key={code} value={code}>
-                {COUNTRY_LABELS[code]}
-              </option>
-            ))}
-          </select>
-        </label>
-
         <label className="hs-field hs-field--wide">
-          <span>City or region</span>
-          <input
+          <span>City</span>
+          <select
             required
-            minLength={2}
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g. Ciudad de México"
-            aria-label="City or region"
-          />
+            aria-label="City"
+          >
+            {groups.map((group) => (
+              <optgroup key={group.region} label={group.region}>
+                {group.locations.map((entry) => (
+                  <option key={entry.location} value={entry.location}>
+                    {entry.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
         </label>
 
         <fieldset className="hs-field">
@@ -170,7 +164,7 @@ export function SearchForm({ onSubmit, loading }: SearchFormProps) {
         </label>
       </div>
 
-      <button className="hs-btn hs-btn--primary" type="submit" disabled={loading}>
+      <button className="hs-btn hs-btn--primary" type="submit" disabled={loading || locations.length === 0}>
         {loading ? "Searching…" : "Search listings"}
       </button>
     </form>

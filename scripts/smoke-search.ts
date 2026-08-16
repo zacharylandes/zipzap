@@ -7,7 +7,6 @@ const samples: SearchInput[] = [
   { country: "US", location: "Austin, TX", listingType: "sale", minPrice: 300000, maxPrice: 700000, bedrooms: 3 },
   { country: "CO", location: "bogota", listingType: "rent", maxPrice: 4000000, bedrooms: 2 },
   { country: "CL", location: "santiago", listingType: "rent", maxPrice: 800000, bedrooms: 2 },
-  { country: "IT", location: "milano", listingType: "rent", maxPrice: 1800, bedrooms: 2 },
 ];
 
 async function main() {

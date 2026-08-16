@@ -7,13 +7,14 @@ test("investor scan shows ranked markets", async ({ page }) => {
   await expect(page.getByRole("columnheader", { name: "Yield" })).toBeVisible({ timeout: 15_000 });
 });
 
-test("browse listings search flow shows mocked listings", async ({ page }) => {
+test("country dropdown switches to live listings search", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Browse listings" }).click();
-  await expect(page.getByRole("heading", { name: "Find homes across borders" })).toBeVisible();
+  await page.getByLabel("Country").selectOption("MX");
+  await expect(page.getByRole("heading", { name: "Listings in Mexico" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Search listings" })).toBeVisible();
+  await expect(page.getByLabel("Crime filter")).toHaveCount(0);
 
-  await page.getByRole("combobox", { name: "Country" }).selectOption("US");
-  await page.getByRole("textbox", { name: "City or region" }).fill("Austin, TX");
+  await page.getByLabel("City").selectOption("ciudad-de-mexico");
   await page.getByRole("button", { name: "Sale", pressed: false }).click();
 
   const responsePromise = page.waitForResponse(
@@ -25,7 +26,6 @@ test("browse listings search flow shows mocked listings", async ({ page }) => {
   expect(response.ok()).toBeTruthy();
 
   await expect(page.getByText("Sunny 2-bed apartment near the park")).toBeVisible();
-  await expect(page.getByText("Bright loft with balcony")).toBeVisible();
   await expect(page.getByLabel("Source status")).toBeVisible();
 });
 
@@ -33,7 +33,7 @@ test("is responsive at mobile width", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Highest rent for the price" })).toBeVisible();
-  await expect(page.getByLabel("Search mode")).toBeVisible();
+  await expect(page.getByLabel("Country")).toBeVisible();
 });
 
 test("view photos opens a zip page you can go back from", async ({ page }) => {

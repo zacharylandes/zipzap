@@ -1,7 +1,6 @@
 import { facebookAdapter } from "@/search/adapters/facebook";
 import { fincaraizAdapter } from "@/search/adapters/fincaraiz";
 import { idealistaAdapter } from "@/search/adapters/idealista";
-import { immobiliareAdapter } from "@/search/adapters/immobiliare";
 import { inmuebles24Adapter } from "@/search/adapters/inmuebles24";
 import { portalInmobiliarioAdapter } from "@/search/adapters/portal-inmobiliario";
 import { realtorAdapter } from "@/search/adapters/realtor";
@@ -14,7 +13,6 @@ const MVP_ADAPTERS: SourceAdapter[] = [
   realtorAdapter,
   fincaraizAdapter,
   portalInmobiliarioAdapter,
-  immobiliareAdapter,
 ];
 
 function experimentalAdapters(): SourceAdapter[] {
@@ -32,4 +30,14 @@ export function getAdaptersForCountry(country: CountryCode): SourceAdapter[] {
 
 export function getAllAdapters(): SourceAdapter[] {
   return [...MVP_ADAPTERS, ...experimentalAdapters()];
+}
+
+export function getSupportedCountries(): CountryCode[] {
+  const supported = new Set<CountryCode>();
+  for (const adapter of MVP_ADAPTERS) {
+    for (const country of adapter.countries) {
+      supported.add(country);
+    }
+  }
+  return [...supported].sort((a, b) => a.localeCompare(b));
 }
