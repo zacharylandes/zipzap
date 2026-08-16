@@ -4,7 +4,7 @@ import { idealistaAdapter } from "@/search/adapters/idealista";
 import { inmuebles24Adapter } from "@/search/adapters/inmuebles24";
 import { portalInmobiliarioAdapter } from "@/search/adapters/portal-inmobiliario";
 import { LISTING_LOCATIONS } from "@/search/locations";
-import { getSupportedCountries } from "@/search/registry";
+import { getSupportedCountries } from "@/search/supported-countries";
 
 describe("LISTING_LOCATIONS", () => {
   it("covers every supported non-US country", () => {

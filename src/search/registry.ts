@@ -6,6 +6,7 @@ import { portalInmobiliarioAdapter } from "@/search/adapters/portal-inmobiliario
 import { realtorAdapter } from "@/search/adapters/realtor";
 import type { SourceAdapter } from "@/search/adapters/types";
 import type { CountryCode } from "@/search/schema";
+import { getSupportedCountries as supportedCountries } from "@/search/supported-countries";
 
 const MVP_ADAPTERS: SourceAdapter[] = [
   inmuebles24Adapter,
@@ -33,11 +34,5 @@ export function getAllAdapters(): SourceAdapter[] {
 }
 
 export function getSupportedCountries(): CountryCode[] {
-  const supported = new Set<CountryCode>();
-  for (const adapter of MVP_ADAPTERS) {
-    for (const country of adapter.countries) {
-      supported.add(country);
-    }
-  }
-  return [...supported].sort((a, b) => a.localeCompare(b));
+  return supportedCountries();
 }
