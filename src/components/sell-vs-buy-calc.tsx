@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { DEFAULT_SELL_VS_BUY_INPUT, HOUSE_2_BUDGET, projectSellVsBuy } from "@/calc/sell-vs-buy";
 import { STATE_OPTIONS } from "@/calc/state-costs";
-import { SiteNav } from "@/components/site-nav";
+import { PageHero } from "@/components/page-hero";
 
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -73,17 +73,11 @@ export function SellVsBuyCalc() {
 
   return (
     <div className="hs-app">
-      <section className="hs-hero hs-hero--compact">
-        <div className="hs-hero__inner">
-          <p className="hs-eyebrow">House Search</p>
-          <SiteNav current="calc" />
-          <h1 className="hs-hero__title">Sell vs buy</h1>
-          <p className="hs-hero__sub">
-            Keep house 1, or sell it and buy house 2 as a rental. Compare total wealth after 25
-            years — home equity plus cash, rent, and investments.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        compact
+        title="Sell vs buy"
+        sub="Keep house 1, or sell it and buy house 2 as a rental. Compare total wealth after 25 years — home equity plus cash, rent, and investments."
+      />
 
       <section className="hs-section">
         <div className="hs-content hs-calc">

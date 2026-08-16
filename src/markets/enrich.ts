@@ -1,5 +1,7 @@
-import { grossYield, type MarketRow } from "@/markets/rank";
+import { grossYield, type MarketRow, type MarketSort } from "@/markets/rank";
 import type { Listing } from "@/search/schema";
+
+export type ListingSort = MarketSort;
 
 export function enrichListings(
   listings: Listing[],
@@ -31,8 +33,6 @@ export function enrichListingsWithNumbeo(
   }));
 }
 
-export type ListingSort = "yield" | "priceDesc" | "priceAsc" | "rentDesc" | "rentAsc";
-
 function compareNullableNumber(
   a: number | null | undefined,
   b: number | null | undefined,
@@ -48,8 +48,14 @@ function compareNullableNumber(
 
 export function sortSearchListings(listings: Listing[], sort: ListingSort): Listing[] {
   return [...listings].sort((a, b) => {
-    if (sort === "yield") {
-      return compareNullableNumber(a.grossYield, b.grossYield, a.title, b.title, true);
+    if (sort === "yieldDesc" || sort === "yieldAsc") {
+      return compareNullableNumber(
+        a.grossYield,
+        b.grossYield,
+        a.title,
+        b.title,
+        sort === "yieldDesc",
+      );
     }
     if (sort === "rentDesc" || sort === "rentAsc") {
       return compareNullableNumber(

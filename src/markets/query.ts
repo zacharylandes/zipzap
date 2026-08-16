@@ -55,7 +55,6 @@ export function parseMarketSort(raw: string | null): MarketSort {
 }
 
 export function toListingSort(sort: MarketSort): ListingSort {
-  if (sort === "yieldDesc" || sort === "yieldAsc") return "yield";
   return sort;
 }
 

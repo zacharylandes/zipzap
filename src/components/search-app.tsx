@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MarketsPanel } from "@/components/markets-panel";
-import { PaginatedResultsGrid } from "@/components/paginated-results-grid";
+import { PageHero } from "@/components/page-hero";
+import { ListingsPanel } from "@/components/listings-panel";
+import { Reveal } from "@/components/reveal";
 import { SearchForm } from "@/components/search-form";
-import { SiteNav } from "@/components/site-nav";
+import { SourceMarquee } from "@/components/source-marquee";
 import { SourceStatusList } from "@/components/source-status";
 import type { ListingSort } from "@/markets/enrich";
 import { homeHref, supportedCountryOptions, zipListingsHref, type MarketQuery } from "@/markets/query";
@@ -42,7 +44,7 @@ export function SearchApp({ query }: SearchAppProps) {
   const [marketsTotal, setMarketsTotal] = useState(0);
   const [marketsLoading, setMarketsLoading] = useState(country === "US");
   const [marketsError, setMarketsError] = useState<string | null>(null);
-  const [listingSort, setListingSort] = useState<ListingSort>("priceDesc");
+  const [listingSort, setListingSort] = useState<ListingSort>("yieldDesc");
   const [listingPage, setListingPage] = useState(1);
   const { loading, elapsedSec, error, result, run } = useSearchRequest();
 
@@ -101,28 +103,38 @@ export function SearchApp({ query }: SearchAppProps) {
 
   return (
     <div className="hs-app">
-      <section className="hs-hero">
-        <div className="hs-hero__inner">
-          <p className="hs-eyebrow">House Search</p>
-          <SiteNav current="search" />
-          <p className="hs-hero__actions">
-            <Link href="/calc" className="hs-btn hs-btn--outline">
-              Sell vs buy calculator
+      <PageHero
+        title={isUsInvestorScan ? "Highest rent for the price" : `Homes for sale in ${countryLabel}`}
+        sub={
+          isUsInvestorScan
+            ? "US ZIPs ranked by typical rent versus typical home value. Counties above average violent crime are hidden."
+            : `Live for-sale listings from the primary portal for ${countryLabel}, with gross yield using Numbeo 1BR rent.`
+        }
+        actions={
+          <>
+            <a className="hs-btn hs-btn--primary" href="#search">
+              Get started
+            </a>
+            <Link href="/calc" className="hs-btn hs-btn--ghost-light">
+              Sell vs buy
             </Link>
-          </p>
-          <h1 className="hs-hero__title">
-            {isUsInvestorScan ? "Highest rent for the price" : `Homes for sale in ${countryLabel}`}
-          </h1>
-          <p className="hs-hero__sub">
-            {isUsInvestorScan
-              ? "US ZIPs ranked by typical rent versus typical home value. Counties above average violent crime are hidden."
-              : `Live for-sale listings from the primary portal for ${countryLabel}, with gross yield using Numbeo 1BR rent.`}
-          </p>
-        </div>
-      </section>
+          </>
+        }
+      />
 
-      <section className="hs-section">
+      <SourceMarquee />
+
+      <section className="hs-section" id="search">
         <div className="hs-content">
+          <Reveal>
+            <p className="hs-eyebrow">The scan</p>
+            <h2 className="hs-heading">A search that&apos;s <em>unique to you</em></h2>
+            <p className="hs-copy">
+              {isUsInvestorScan
+                ? "Filter by price, crime, and state. Then open the ZIPs with the strongest rent-to-price."
+                : `Search live for-sale listings in ${countryLabel} and estimate gross yield from Numbeo 1BR rent.`}
+            </p>
+          </Reveal>
           <label className="hs-field hs-field--country">
             <span>Country</span>
             <select
@@ -184,7 +196,7 @@ export function SearchApp({ query }: SearchAppProps) {
                 </p>
               ) : null}
               {result ? <SourceStatusList sources={result.sources} /> : null}
-              <PaginatedResultsGrid
+              <ListingsPanel
                 listings={result?.listings ?? []}
                 loading={loading}
                 loadingMessage={`Scraping listings… ${elapsedSec}s. This usually takes 20–45 seconds.`}
@@ -208,6 +220,42 @@ export function SearchApp({ query }: SearchAppProps) {
               {marketsError}
             </p>
           ) : null}
+        </div>
+      </section>
+
+      <section className="hs-section">
+        <div className="hs-content">
+          <Reveal>
+            <p className="hs-eyebrow">Why it works</p>
+            <h2 className="hs-heading">Yield first. Listings second.</h2>
+            <p className="hs-copy">
+              Rank markets first. Then open the homes. Yield, crime, and live photos stay in one
+              place so you are not bouncing between portals.
+            </p>
+            <div className="hs-features">
+              <article className="hs-feature">
+                <h3 className="hs-feature__title">ZIPs ranked by rent versus price</h3>
+                <p className="hs-feature__text">
+                  Typical rent over typical home value, using Zillow ZHVI and ZORI, so the strongest
+                  gross yields surface first.
+                </p>
+              </article>
+              <article className="hs-feature">
+                <h3 className="hs-feature__title">A crime filter that stays out of the way</h3>
+                <p className="hs-feature__text">
+                  Counties above average violent crime are hidden by default. You can loosen the
+                  filter without leaving the scan.
+                </p>
+              </article>
+              <article className="hs-feature">
+                <h3 className="hs-feature__title">Live listings from the local portal</h3>
+                <p className="hs-feature__text">
+                  Open a ZIP for Realtor.com photos, or switch country for Idealista, Inmuebles24,
+                  Mercado Libre, and more.
+                </p>
+              </article>
+            </div>
+          </Reveal>
         </div>
       </section>
     </div>

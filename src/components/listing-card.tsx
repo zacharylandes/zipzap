@@ -127,22 +127,32 @@ export function ListingCard({ listing }: { listing: Listing }) {
             ) : (
               <div className="hs-card__placeholder">No photo</div>
             )}
-            <h3 id={titleId} className="hs-lightbox__title">
-              {listing.title}
-            </h3>
-            <p className="hs-lightbox__price">{formatPrice(listing)}</p>
-            <div className="hs-lightbox__actions">
-              <a
-                className="hs-btn hs-btn--outline"
-                href={listing.url}
-                target="_blank"
-                rel="noopener noreferrer"
+            <div className="hs-lightbox__body">
+              <button
+                type="button"
+                className="hs-lightbox__close"
+                onClick={() => setOpen(false)}
+                aria-label="Close dialog"
               >
-                Open listing
-              </a>
-              <button type="button" className="hs-btn hs-btn--ghost" onClick={() => setOpen(false)}>
-                Close
+                ✕
               </button>
+              <h3 id={titleId} className="hs-lightbox__title">
+                {listing.title}
+              </h3>
+              <p className="hs-lightbox__price">{formatPrice(listing)}</p>
+              <div className="hs-lightbox__actions">
+                <a
+                  className="hs-btn hs-btn--primary hs-btn--arrow"
+                  href={listing.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open listing
+                </a>
+                <button type="button" className="hs-btn hs-btn--outline" onClick={() => setOpen(false)}>
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

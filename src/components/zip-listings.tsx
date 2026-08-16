@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { PaginatedResultsGrid } from "@/components/paginated-results-grid";
+import { PageHero } from "@/components/page-hero";
+import { ListingsPanel } from "@/components/listings-panel";
 import { SourceStatusList } from "@/components/source-status";
 import { toListingSort, type MarketQuery } from "@/markets/query";
 import type { ListingSort } from "@/markets/enrich";
@@ -46,17 +47,11 @@ export function ZipListings({ zip, query, market, backHref }: ZipListingsProps) 
 
   return (
     <div className="hs-app">
-      <section className="hs-hero hs-hero--compact">
-        <div className="hs-hero__inner">
-          <p className="hs-eyebrow">House Search</p>
-          <h1 className="hs-hero__title">Highest rent for the price</h1>
-          <p className="hs-hero__sub">
-            Live for-sale listings in this ZIP, ${Math.round(minPrice / 1000)}k–${Math.round(
-              maxPrice / 1000,
-            )}k.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        compact
+        title="Highest rent for the price"
+        sub={`Live for-sale listings in this ZIP, $${Math.round(minPrice / 1000)}k–$${Math.round(maxPrice / 1000)}k.`}
+      />
 
       <section className="hs-section">
         <div className="hs-content">
@@ -75,7 +70,7 @@ export function ZipListings({ zip, query, market, backHref }: ZipListingsProps) 
             </p>
           ) : null}
           {result ? <SourceStatusList sources={result.sources} /> : null}
-          <PaginatedResultsGrid
+          <ListingsPanel
             listings={result?.listings ?? []}
             loading={loading}
             loadingMessage={loadingMessage}

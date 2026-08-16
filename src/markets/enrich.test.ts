@@ -76,7 +76,7 @@ describe("sortSearchListings", () => {
       ],
       market,
     );
-    expect(sortSearchListings(listings, "yield").map((row) => row.id)).toEqual(["high", "low"]);
+    expect(sortSearchListings(listings, "yieldDesc").map((row) => row.id)).toEqual(["high", "low"]);
   });
 
   it("sorts by price descending for investor listings", () => {
