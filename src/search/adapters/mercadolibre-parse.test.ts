@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  extractMercadoLibreThumbnail,
   parseLocalizedNumber,
   parseMercadoLibreHtml,
   parseMercadoLibrePriceLabel,
@@ -15,6 +16,18 @@ const SAMPLE_CARD = `
   <span>3 dorm · 120 m²</span>
 </li>
 `;
+
+describe("extractMercadoLibreThumbnail", () => {
+  it("prefers the listing photo over broker logos", () => {
+    const card = `
+      <img class="poly-component__picture" src="https://http2.mlstatic.com/D_NQ_NP_2X_755046-property.webp" alt="Edificio" />
+      <img class="poly-component__picture" src="https://http2.mlstatic.com/storage/vis-accounts/broker.png" alt="Broker" />
+    `;
+    expect(extractMercadoLibreThumbnail(card)).toBe(
+      "https://http2.mlstatic.com/D_NQ_NP_2X_755046-property.webp",
+    );
+  });
+});
 
 describe("parseMercadoLibrePriceLabel", () => {
   it("detects USD prices in Argentina", () => {
@@ -58,6 +71,7 @@ describe("parseMercadoLibreHtml", () => {
       currency: "USD",
       bedrooms: 3,
       area: 120,
+      thumbnailUrl: "https://http2.mlstatic.com/photo.webp",
       url: "https://departamento.mercadolibre.com.ar/MLA-3700630222-edificio-palermo-_JM",
     });
   });

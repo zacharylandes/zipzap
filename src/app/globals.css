@@ -995,6 +995,21 @@ button {
   max-width: 28rem;
 }
 
+.hs-listings__thumb {
+  width: 3.5rem;
+  padding-right: 0.35rem;
+}
+
+.hs-listings__thumb-img {
+  display: block;
+  width: 3rem;
+  height: 2.25rem;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--hs-twilight-10);
+  background: var(--hs-sky);
+}
+
 .hs-listings__name {
   display: block;
   font-family: var(--hs-font-serif);

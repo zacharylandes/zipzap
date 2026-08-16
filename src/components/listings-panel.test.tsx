@@ -42,6 +42,31 @@ const listings: Listing[] = [
 ];
 
 describe("ListingsPanel", () => {
+  it("renders listing thumbnails when available", () => {
+    const withThumb: Listing = {
+      ...listings[0]!,
+      id: "thumb",
+      title: "Photo flat",
+      thumbnailUrl: "https://http2.mlstatic.com/example.webp",
+    };
+
+    render(
+      <ListingsPanel
+        listings={[withThumb, listings[1]!]}
+        sort="yieldDesc"
+        page={1}
+        onSort={vi.fn()}
+        onPage={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: /view photo for photo flat/i })).toHaveAttribute(
+      "href",
+      withThumb.url,
+    );
+    expect(screen.getByRole("presentation")).toBeInTheDocument();
+  });
+
   it("renders a sortable table with yield, price, and rent columns", () => {
     render(
       <ListingsPanel

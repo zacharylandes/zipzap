@@ -9,10 +9,30 @@ const PRICE_ARIA_RE =
   /aria-label="([^"]+)"[^>]*aria-roledescription="Monto"/i;
 const IMG_ALT_RE = /<img[^>]*class="[^"]*poly-component__picture[^"]*"[^>]*alt="([^"]+)"/i;
 const TITLE_RE = /class="[^"]*poly-component__title[^"]*"[^>]*>([^<]+)</i;
-const THUMB_RE = /<img[^>]*class="[^"]*poly-component__picture[^"]*"[^>]*src="([^"]+)"/i;
-const BED_RE = /(\d+)\s+dorm/i;
-const BATH_RE = /(\d+)\s+ba[nñ]o/i;
-const AREA_RE = /(\d[\d.,]*)\s*m²/i;
+const PICTURE_IMG_RE =
+  /<img\b[^>]*class="[^"]*poly-component__picture[^"]*"[^>]*>/gi;
+
+function extractImgAttribute(tag: string, attribute: "src" | "srcset"): string | null {
+  const match = tag.match(new RegExp(`${attribute}="([^"]+)"`, "i"));
+  return match?.[1] ?? null;
+}
+
+function isBrokerThumbnail(src: string): boolean {
+  return /vis-accounts|classifieds_accounts|real_estate_agency/i.test(src);
+}
+
+export function extractMercadoLibreThumbnail(card: string): string | null {
+  for (const match of card.matchAll(PICTURE_IMG_RE)) {
+    const tag = match[0];
+    const src = extractImgAttribute(tag, "src");
+    if (src && !isBrokerThumbnail(src)) return src;
+  }
+
+  const fallback = card.match(
+    /src="(https:\/\/http2\.mlstatic\.com\/D_NQ[^"]+)"/i,
+  )?.[1];
+  return fallback ?? null;
+}
 
 export function parseLocalizedNumber(raw: string): number | null {
   const cleaned = raw.trim();
@@ -32,6 +52,10 @@ export function parseLocalizedNumber(raw: string): number | null {
   const value = Number(normalized);
   return Number.isFinite(value) && value > 0 ? value : null;
 }
+
+const BED_RE = /(\d+)\s+dorm/i;
+const BATH_RE = /(\d+)\s+ba[nñ]o/i;
+const AREA_RE = /(\d[\d.,]*)\s*m²/i;
 
 export function parseMercadoLibrePriceLabel(
   label: string,
@@ -110,7 +134,7 @@ export function parseMercadoLibreHtml(
       bathrooms,
       area,
       areaUnit: area != null ? "sqm" : null,
-      thumbnailUrl: card.match(THUMB_RE)?.[1] ?? null,
+      thumbnailUrl: extractMercadoLibreThumbnail(card),
       location: input.location,
     });
   }

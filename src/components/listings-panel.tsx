@@ -145,6 +145,9 @@ export function ListingsPanel({
           <caption className="visually-hidden">Property listings ranked by selected column</caption>
           <thead>
             <tr>
+              <th scope="col">
+                <span className="visually-hidden">Photo</span>
+              </th>
               <SortableHeader label="Yield" column="yield" sort={sort} onSort={onSort} />
               <th scope="col">Property</th>
               <SortableHeader label="Price" column="price" sort={sort} onSort={onSort} />
@@ -158,6 +161,25 @@ export function ListingsPanel({
           <tbody>
             {slice.map((listing) => (
               <tr key={listing.id} className="hs-markets__row">
+                <td className="hs-listings__thumb">
+                  {listing.thumbnailUrl ? (
+                    <a
+                      href={listing.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`View photo for ${listing.title}`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={listing.thumbnailUrl}
+                        alt=""
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        className="hs-listings__thumb-img"
+                      />
+                    </a>
+                  ) : null}
+                </td>
                 <td className="hs-markets__yield">{yieldLabel(listing.grossYield)}</td>
                 <td className="hs-listings__title">
                   <span className="hs-listings__name">{listing.title}</span>
