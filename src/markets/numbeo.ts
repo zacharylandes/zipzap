@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
 export type NumbeoRentEntry = {
@@ -17,16 +17,21 @@ export type NumbeoRentFile = {
 };
 
 let cached: NumbeoRentFile | null = null;
+let cachedMtimeMs = 0;
 
 export function numbeoRentFilePath(cwd = process.cwd()): string {
   return path.join(cwd, "data", "numbeo-rent.json");
 }
 
 export function loadNumbeoRentFile(cwd = process.cwd()): NumbeoRentFile {
-  if (cached && cwd === process.cwd()) return cached;
-  const raw = readFileSync(numbeoRentFilePath(cwd), "utf8");
-  const parsed = JSON.parse(raw) as NumbeoRentFile;
-  if (cwd === process.cwd()) cached = parsed;
+  const filePath = numbeoRentFilePath(cwd);
+  const mtimeMs = statSync(filePath).mtimeMs;
+  if (cached && cwd === process.cwd() && cachedMtimeMs === mtimeMs) return cached;
+  const parsed = JSON.parse(readFileSync(filePath, "utf8")) as NumbeoRentFile;
+  if (cwd === process.cwd()) {
+    cached = parsed;
+    cachedMtimeMs = mtimeMs;
+  }
   return parsed;
 }
 

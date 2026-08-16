@@ -9,23 +9,44 @@ const ROOT = path.resolve(import.meta.dirname, "..");
 const OUT_PATH = path.join(ROOT, "data", "numbeo-rent.json");
 const UA = "house-search/0.1 (numbeo rent refresh; research only)";
 
-async function fetchNumbeoRent(numbeoCity: string): Promise<{
-  monthlyRent: number;
-  monthlyRent3br: number | null;
-}> {
-  const url = `https://www.numbeo.com/property-investment/in/${encodeURIComponent(numbeoCity)}`;
+async function fetchNumbeoHtml(url: string): Promise<string> {
   const res = await fetch(url, {
     headers: { "user-agent": UA, accept: "text/html" },
   });
   if (!res.ok) {
     throw new Error(`${url} -> ${res.status}`);
   }
-  const html = await res.text();
-  const rents = parseNumbeoRents(html);
-  if (rents.oneBedroom == null) {
-    throw new Error(`${url} -> missing Numbeo 1BR rent row`);
+  return res.text();
+}
+
+async function fetchNumbeoRent(numbeoCity: string): Promise<{
+  monthlyRent: number;
+  monthlyRent3br: number | null;
+}> {
+  const encoded = encodeURIComponent(numbeoCity);
+  const urls = [
+    `https://www.numbeo.com/property-investment/in/${encoded}`,
+    `https://www.numbeo.com/cost-of-living/in/${encoded}`,
+  ];
+  let oneBedroom: number | null = null;
+  let threeBedroom: number | null = null;
+  let lastError: Error | null = null;
+
+  for (const url of urls) {
+    try {
+      const rents = parseNumbeoRents(await fetchNumbeoHtml(url));
+      oneBedroom ??= rents.oneBedroom;
+      threeBedroom ??= rents.threeBedroom;
+      if (oneBedroom != null && threeBedroom != null) break;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+    }
   }
-  return { monthlyRent: rents.oneBedroom, monthlyRent3br: rents.threeBedroom };
+
+  if (oneBedroom == null) {
+    throw lastError ?? new Error(`${numbeoCity} -> missing Numbeo 1BR rent row`);
+  }
+  return { monthlyRent: oneBedroom, monthlyRent3br: threeBedroom };
 }
 
 async function main() {

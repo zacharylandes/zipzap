@@ -8,6 +8,7 @@ import { findMarketByZip, loadMarketsFile } from "@/markets/load";
 import { findNumbeoRent } from "@/markets/numbeo";
 import {
   COUNTRY_CURRENCY,
+  SEARCH_CACHE_VERSION,
   SOURCE_TIMEOUT_MS,
   type Listing,
   type SearchInput,
@@ -17,6 +18,7 @@ import {
 
 function normalizeCacheKey(input: SearchInput): string {
   return JSON.stringify({
+    v: SEARCH_CACHE_VERSION,
     country: input.country,
     location: input.location.trim().toLowerCase(),
     listingType: input.listingType,

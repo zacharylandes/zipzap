@@ -92,6 +92,18 @@ describe("enrichListingsWithNumbeo", () => {
     );
     expect(enriched?.estimatedMonthlyRent).toBe(522);
   });
+
+  it("falls back to 1BR for every bedroom count when 3BR rent is missing", () => {
+    const [oneBed, threeBed] = enrichListingsWithNumbeo(
+      [
+        listing({ id: "1br", title: "1 bed", price: 100_000, bedrooms: 1 }),
+        listing({ id: "3br", title: "3 bed", price: 100_000, bedrooms: 3 }),
+      ],
+      { oneBedroom: 522, threeBedroom: null },
+    );
+    expect(oneBed?.estimatedMonthlyRent).toBe(522);
+    expect(threeBed?.estimatedMonthlyRent).toBe(522);
+  });
 });
 
 describe("sortSearchListings", () => {

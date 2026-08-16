@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { filterListingsBySearchInput } from "@/search/filters";
-import { SEARCH_CACHE_TTL_MS, type SearchInput, type SearchResponse } from "@/search/schema";
+import {
+  SEARCH_CACHE_TTL_MS,
+  SEARCH_CACHE_VERSION,
+  type SearchInput,
+  type SearchResponse,
+} from "@/search/schema";
 
 export const CLIENT_SEARCH_TIMEOUT_MS = 70_000;
 
@@ -15,6 +20,7 @@ const clientSearchCache = new Map<string, CacheEntry>();
 
 function searchCacheKey(input: SearchInput): string {
   return JSON.stringify({
+    v: SEARCH_CACHE_VERSION,
     country: input.country,
     location: input.location.trim().toLowerCase(),
     listingType: input.listingType,
