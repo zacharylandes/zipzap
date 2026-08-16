@@ -6,7 +6,7 @@ import {
   groupListingLocations,
   type ListingLocation,
 } from "@/search/locations";
-import { COUNTRY_CURRENCY, type CountryCode, type ListingType, type SearchInput } from "@/search/schema";
+import { COUNTRY_CURRENCY, type CountryCode, type SearchInput } from "@/search/schema";
 
 type SearchFormProps = {
   country: CountryCode;
@@ -23,7 +23,6 @@ function optionalNumber(value: string): number | undefined {
 
 export function SearchForm({ country, locations, onSubmit, loading }: SearchFormProps) {
   const [location, setLocation] = useState(defaultListingLocation(country));
-  const [listingType, setListingType] = useState<ListingType>("rent");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [bedrooms, setBedrooms] = useState("");
@@ -41,7 +40,7 @@ export function SearchForm({ country, locations, onSubmit, loading }: SearchForm
     onSubmit({
       country,
       location,
-      listingType,
+      listingType: "sale",
       minPrice: optionalNumber(minPrice),
       maxPrice: optionalNumber(maxPrice),
       bedrooms: optionalNumber(bedrooms),
@@ -73,28 +72,6 @@ export function SearchForm({ country, locations, onSubmit, loading }: SearchForm
             ))}
           </select>
         </label>
-
-        <fieldset className="hs-field">
-          <legend>Listing type</legend>
-          <div className="hs-tabs" role="tablist" aria-label="Listing type">
-            <button
-              type="button"
-              className={listingType === "rent" ? "is-active" : ""}
-              aria-pressed={listingType === "rent"}
-              onClick={() => setListingType("rent")}
-            >
-              Rent
-            </button>
-            <button
-              type="button"
-              className={listingType === "sale" ? "is-active" : ""}
-              aria-pressed={listingType === "sale"}
-              onClick={() => setListingType("sale")}
-            >
-              Sale
-            </button>
-          </div>
-        </fieldset>
 
         <label className="hs-field">
           <span>Min price ({currency})</span>

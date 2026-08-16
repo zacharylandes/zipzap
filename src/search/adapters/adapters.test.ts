@@ -3,7 +3,7 @@ import { inmuebles24Adapter } from "@/search/adapters/inmuebles24";
 import { idealistaAdapter } from "@/search/adapters/idealista";
 import { realtorAdapter } from "@/search/adapters/realtor";
 import { fincaraizAdapter } from "@/search/adapters/fincaraiz";
-import { portalInmobiliarioAdapter } from "@/search/adapters/portal-inmobiliario";
+import { mercadolibreInmueblesAdapter } from "@/search/adapters/mercadolibre-inmuebles";
 import { immobiliareAdapter } from "@/search/adapters/immobiliare";
 import {
   normalizeCurrency,
@@ -84,14 +84,38 @@ describe("portal URL builders", () => {
     ).toContain("fincaraiz.com.co/arriendo/inmuebles/bogota");
   });
 
-  it("builds Portal Inmobiliario URL", () => {
+  it("builds MercadoLibre Inmuebles URL for Chile", () => {
     expect(
-      portalInmobiliarioAdapter.buildSearchUrl({
+      mercadolibreInmueblesAdapter.buildSearchUrl({
         country: "CL",
-        location: "Santiago",
+        location: "santiago",
         listingType: "sale",
       }),
-    ).toContain("portalinmobiliario.com/venta/departamento/santiago");
+    ).toBe("https://inmuebles.mercadolibre.cl/departamentos/venta/santiago");
+  });
+
+  it("builds MercadoLibre Inmuebles URL for Argentina with filters", () => {
+    expect(
+      mercadolibreInmueblesAdapter.buildSearchUrl({
+        country: "AR",
+        location: "capital-federal",
+        listingType: "rent",
+        maxPrice: 500000,
+        bedrooms: 2,
+      }),
+    ).toBe(
+      "https://inmuebles.mercadolibre.com.ar/departamentos/alquiler/capital-federal_PriceRange_-500000_Bedrooms_2",
+    );
+  });
+
+  it("builds MercadoLibre Inmuebles URL for Peru", () => {
+    expect(
+      mercadolibreInmueblesAdapter.buildSearchUrl({
+        country: "PE",
+        location: "lima",
+        listingType: "rent",
+      }),
+    ).toBe("https://inmuebles.mercadolibre.com.pe/departamentos/alquiler/lima");
   });
 
   it("builds Immobiliare URL", () => {

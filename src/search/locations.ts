@@ -79,6 +79,24 @@ export const LISTING_LOCATIONS: Record<
     { label: "Puerto Montt", location: "puerto-montt", numbeoCity: "Puerto-Montt", region: "Los Lagos" },
     { label: "Rancagua", location: "rancagua", numbeoCity: "Rancagua", region: "O'Higgins" },
   ],
+  AR: [
+    { label: "Buenos Aires (CABA)", location: "capital-federal", numbeoCity: "Buenos-Aires", region: "Ciudad Autónoma de Buenos Aires" },
+    { label: "Córdoba", location: "cordoba", numbeoCity: "Cordoba", region: "Córdoba" },
+    { label: "Rosario", location: "rosario", numbeoCity: "Rosario", region: "Santa Fe" },
+    { label: "Mendoza", location: "mendoza", numbeoCity: "Mendoza", region: "Mendoza" },
+    { label: "La Plata", location: "la-plata", numbeoCity: "La-Plata", region: "Buenos Aires" },
+    { label: "Mar del Plata", location: "mar-del-plata", numbeoCity: "Mar-del-Plata", region: "Buenos Aires" },
+    { label: "Salta", location: "salta", numbeoCity: "Salta", region: "Salta" },
+    { label: "San Miguel de Tucumán", location: "tucuman", numbeoCity: "Tucuman", region: "Tucumán" },
+  ],
+  PE: [
+    { label: "Lima", location: "lima", numbeoCity: "Lima", region: "Lima" },
+    { label: "Arequipa", location: "arequipa", numbeoCity: "Arequipa", region: "Arequipa" },
+    { label: "Cusco", location: "cusco", numbeoCity: "Cusco", region: "Cusco" },
+    { label: "Trujillo", location: "trujillo", numbeoCity: "Trujillo", region: "La Libertad" },
+    { label: "Piura", location: "piura", numbeoCity: "Piura", region: "Piura" },
+    { label: "Chiclayo", location: "chiclayo", numbeoCity: "Chiclayo", region: "Lambayeque" },
+  ],
 };
 
 export function allListingLocations(): ListingLocation[] {

@@ -111,12 +111,12 @@ export function SearchApp({ query }: SearchAppProps) {
             </Link>
           </p>
           <h1 className="hs-hero__title">
-            {isUsInvestorScan ? "Highest rent for the price" : `Listings in ${countryLabel}`}
+            {isUsInvestorScan ? "Highest rent for the price" : `Homes for sale in ${countryLabel}`}
           </h1>
           <p className="hs-hero__sub">
             {isUsInvestorScan
               ? "US ZIPs ranked by typical rent versus typical home value. Counties above average violent crime are hidden."
-              : `Live sale and rent listings scraped from the primary portal for ${countryLabel}. Sale searches show gross yield using Numbeo 1BR rent.`}
+              : `Live for-sale listings from the primary portal for ${countryLabel}, with gross yield using Numbeo 1BR rent.`}
           </p>
         </div>
       </section>

@@ -15,7 +15,7 @@ Private local Next.js app for on-demand housing search. Default view ranks US ZI
   - Spain → Idealista
   - United States → Realtor.com
   - Colombia → FincaRaíz
-  - Chile → Portal Inmobiliario
+  - Argentina, Chile, Peru → MercadoLibre Inmuebles
   - Italy → Immobiliare.it
 - Filters: country, city/region, rent/sale, price, bedrooms, bathrooms, floor area
 - On-demand Firecrawl scrape only after submit (no preloading)
@@ -136,7 +136,7 @@ Bounded Firecrawl smoke (one page per MVP portal) after JSON-schema fix:
 | Inmuebles24 | OK (listings returned) |
 | Realtor.com | OK |
 | FincaRaíz | OK |
-| Portal Inmobiliario | OK |
+| MercadoLibre Inmuebles (AR/CL/PE) | OK |
 | Idealista | Geo/filter URL sensitive; city pages use `city-province` slugs |
 | Immobiliare.it | Page often loads; extraction can be empty under bot/layout variance |
 

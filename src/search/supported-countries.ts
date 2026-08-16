@@ -1,7 +1,7 @@
 import { COUNTRY_LABELS, type CountryCode } from "@/search/schema";
 
 /** Countries with an MVP listing adapter wired in production. */
-export const SUPPORTED_COUNTRIES: CountryCode[] = ["CL", "CO", "ES", "MX", "US"];
+export const SUPPORTED_COUNTRIES: CountryCode[] = ["AR", "CL", "CO", "ES", "MX", "PE", "US"];
 
 export function getSupportedCountries(): CountryCode[] {
   return [...SUPPORTED_COUNTRIES];

@@ -13,7 +13,6 @@ describe("SearchForm", () => {
     render(<SearchForm country="MX" locations={LISTING_LOCATIONS.MX} onSubmit={onSubmit} />);
 
     await user.selectOptions(screen.getByLabelText("City"), "guadalajara");
-    await user.click(screen.getByRole("button", { name: "Sale" }));
     await user.type(screen.getByLabelText("Minimum price in MXN"), "200000");
     await user.type(screen.getByLabelText("Bedrooms"), "3");
     await user.click(screen.getByRole("button", { name: "Search listings" }));

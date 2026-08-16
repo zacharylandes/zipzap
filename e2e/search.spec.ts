@@ -10,12 +10,11 @@ test("investor scan shows ranked markets", async ({ page }) => {
 test("country dropdown switches to live listings search", async ({ page }) => {
   await page.goto("/");
   await page.getByLabel("Country").selectOption("MX");
-  await expect(page.getByRole("heading", { name: "Listings in Mexico" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Homes for sale in Mexico" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Search listings" })).toBeVisible();
   await expect(page.getByLabel("Crime filter")).toHaveCount(0);
 
   await page.getByLabel("City").selectOption("ciudad-de-mexico");
-  await page.getByRole("button", { name: "Sale", pressed: false }).click();
 
   const responsePromise = page.waitForResponse(
     (response) =>

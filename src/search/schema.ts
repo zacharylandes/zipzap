@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const COUNTRIES = ["MX", "ES", "US", "CO", "CL", "IT"] as const;
+export const COUNTRIES = ["MX", "ES", "US", "CO", "CL", "AR", "PE", "IT"] as const;
 export type CountryCode = (typeof COUNTRIES)[number];
 
 export const LISTING_TYPES = ["rent", "sale"] as const;
@@ -12,6 +12,8 @@ export const COUNTRY_CURRENCY: Record<CountryCode, string> = {
   US: "USD",
   CO: "COP",
   CL: "CLP",
+  AR: "ARS",
+  PE: "PEN",
   IT: "EUR",
 };
 
@@ -21,6 +23,8 @@ export const COUNTRY_LABELS: Record<CountryCode, string> = {
   US: "United States",
   CO: "Colombia",
   CL: "Chile",
+  AR: "Argentina",
+  PE: "Peru",
   IT: "Italy",
 };
 

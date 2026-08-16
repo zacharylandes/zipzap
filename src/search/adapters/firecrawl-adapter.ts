@@ -66,6 +66,10 @@ const CURRENCY_ALIASES: Record<string, string> = {
   "COL$": "COP",
   CLP$: "CLP",
   "CL$": "CLP",
+  ARS$: "ARS",
+  "AR$": "ARS",
+  PEN$: "PEN",
+  "S/": "PEN",
 };
 
 export function normalizeCurrency(
@@ -135,9 +139,16 @@ export type PortalAdapterConfig = {
   id: string;
   name: string;
   countries: SearchInput["country"][];
-  origin: string;
+  origin: string | ((input: SearchInput) => string);
   buildSearchUrl: (input: SearchInput) => string;
 };
+
+function resolveOrigin(
+  origin: PortalAdapterConfig["origin"],
+  input: SearchInput,
+): string {
+  return typeof origin === "function" ? origin(input) : origin;
+}
 
 export function createPortalAdapter(config: PortalAdapterConfig): SourceAdapter {
   return {
@@ -160,6 +171,7 @@ export function createPortalAdapter(config: PortalAdapterConfig): SourceAdapter 
       }
 
       const searchUrl = config.buildSearchUrl(input);
+      const origin = resolveOrigin(config.origin, input);
 
       try {
         const client = getFirecrawlClient();
@@ -191,7 +203,7 @@ export function createPortalAdapter(config: PortalAdapterConfig): SourceAdapter 
           const normalized = normalizeRawListing(raw, input, {
             sourceId: config.id,
             sourceName: config.name,
-            baseUrl: config.origin,
+            baseUrl: origin,
           });
           if (normalized) listings.push(normalized);
           if (listings.length >= MAX_LISTINGS_PER_SOURCE) break;

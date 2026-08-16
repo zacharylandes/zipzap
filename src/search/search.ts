@@ -110,7 +110,7 @@ export async function runSearch(input: SearchInput): Promise<SearchResponse> {
     market = undefined;
   }
   let enriched = enrichListings(dedupeListings(listings), market);
-  if (input.country !== "US" && input.listingType === "sale") {
+  if (input.country !== "US") {
     enriched = enrichListingsWithNumbeo(
       enriched,
       findNumbeoRent(input.location.trim().toLowerCase())?.monthlyRent,

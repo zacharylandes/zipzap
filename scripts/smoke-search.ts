@@ -2,11 +2,13 @@ import { getAllAdapters } from "../src/search/registry";
 import type { SearchInput } from "../src/search/schema";
 
 const samples: SearchInput[] = [
-  { country: "MX", location: "Ciudad de Mexico", listingType: "rent", maxPrice: 25000, bedrooms: 2 },
-  { country: "ES", location: "madrid", listingType: "rent", maxPrice: 1500, bedrooms: 2 },
+  { country: "MX", location: "Ciudad de Mexico", listingType: "sale", maxPrice: 5_000_000, bedrooms: 2 },
+  { country: "ES", location: "madrid", listingType: "sale", maxPrice: 400_000, bedrooms: 2 },
   { country: "US", location: "Austin, TX", listingType: "sale", minPrice: 300000, maxPrice: 700000, bedrooms: 3 },
-  { country: "CO", location: "bogota", listingType: "rent", maxPrice: 4000000, bedrooms: 2 },
-  { country: "CL", location: "santiago", listingType: "rent", maxPrice: 800000, bedrooms: 2 },
+  { country: "CO", location: "bogota", listingType: "sale", maxPrice: 800_000_000, bedrooms: 2 },
+  { country: "CL", location: "santiago", listingType: "sale", maxPrice: 200_000_000, bedrooms: 2 },
+  { country: "AR", location: "capital-federal", listingType: "sale", maxPrice: 200_000_000, bedrooms: 2 },
+  { country: "PE", location: "lima", listingType: "sale", maxPrice: 800_000, bedrooms: 2 },
 ];
 
 async function main() {
