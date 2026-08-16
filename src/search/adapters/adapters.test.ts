@@ -91,7 +91,7 @@ describe("portal URL builders", () => {
         location: "santiago",
         listingType: "sale",
       }),
-    ).toBe("https://inmuebles.mercadolibre.cl/departamentos/venta/santiago");
+    ).toBe("https://inmuebles.mercadolibre.cl/departamentos/venta/santiago/");
   });
 
   it("builds MercadoLibre Inmuebles URL for Argentina with filters", () => {
@@ -99,12 +99,12 @@ describe("portal URL builders", () => {
       mercadolibreInmueblesAdapter.buildSearchUrl({
         country: "AR",
         location: "capital-federal",
-        listingType: "rent",
-        maxPrice: 500000,
-        bedrooms: 2,
+        listingType: "sale",
+        minPrice: 500000,
+        bedrooms: 3,
       }),
     ).toBe(
-      "https://inmuebles.mercadolibre.com.ar/departamentos/alquiler/capital-federal_PriceRange_-500000_Bedrooms_2",
+      "https://inmuebles.mercadolibre.com.ar/departamentos/venta/3-dormitorios/capital-federal/",
     );
   });
 
@@ -113,9 +113,9 @@ describe("portal URL builders", () => {
       mercadolibreInmueblesAdapter.buildSearchUrl({
         country: "PE",
         location: "lima",
-        listingType: "rent",
+        listingType: "sale",
       }),
-    ).toBe("https://inmuebles.mercadolibre.com.pe/departamentos/alquiler/lima");
+    ).toBe("https://inmuebles.mercadolibre.com.pe/departamentos/venta/lima/");
   });
 
   it("builds Immobiliare URL", () => {
@@ -214,6 +214,8 @@ describe("normalizeCurrency", () => {
     expect(normalizeCurrency("MN", "MXN")).toBe("MXN");
     expect(normalizeCurrency("MN$", "MXN")).toBe("MXN");
     expect(normalizeCurrency("$", "USD")).toBe("USD");
+    expect(normalizeCurrency("$", "ARS")).toBe("ARS");
+    expect(normalizeCurrency("U$S", "ARS")).toBe("USD");
     expect(normalizeCurrency("€", "EUR")).toBe("EUR");
   });
 

@@ -437,7 +437,8 @@ button {
 
 .hs-card__meta,
 .hs-card__location,
-.hs-card__crime {
+.hs-card__crime,
+.hs-card__price-note {
   margin: 0;
   font-size: 0.9rem;
   color: rgba(14, 12, 33, 0.7);

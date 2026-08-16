@@ -87,6 +87,8 @@ export const listingSchema = z.object({
   thumbnailUrl: z.string().url().nullable(),
   url: z.string().url(),
   zip: z.string().optional(),
+  originalPrice: z.number().nullable().optional(),
+  originalCurrency: z.string().optional(),
   estimatedMonthlyRent: z.number().nullable().optional(),
   grossYield: z.number().nullable().optional(),
   crimeVsNational: z.number().nullable().optional(),

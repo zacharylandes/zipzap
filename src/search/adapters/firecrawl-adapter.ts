@@ -57,9 +57,9 @@ const CURRENCY_ALIASES: Record<string, string> = {
   "MN$": "MXN",
   "MXN$": "MXN",
   MX$: "MXN",
-  "$": "USD",
   US$: "USD",
   USD$: "USD",
+  "U$S": "USD",
   "€": "EUR",
   EU: "EUR",
   COP$: "COP",
@@ -80,6 +80,7 @@ export function normalizeCurrency(
   const trimmed = raw.trim().toUpperCase();
   if (!trimmed) return fallback;
   if (CURRENCY_ALIASES[trimmed]) return CURRENCY_ALIASES[trimmed];
+  if (trimmed === "$") return fallback;
   // Only trust clean 3-letter ISO codes from scraped text; otherwise use the
   // country's known currency so display stays correct.
   if (/^[A-Z]{3}$/.test(trimmed)) return trimmed;

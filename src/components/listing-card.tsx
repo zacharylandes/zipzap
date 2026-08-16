@@ -59,6 +59,18 @@ export function ListingCard({ listing }: { listing: Listing }) {
           <p className="hs-card__source">{listing.sourceName}</p>
           <h3 className="hs-card__title">{listing.title}</h3>
           <p className="hs-card__price">{formatPrice(listing)}</p>
+          {listing.originalCurrency &&
+          listing.originalPrice != null &&
+          listing.originalCurrency !== listing.currency ? (
+            <p className="hs-card__price-note">
+              Listed in{" "}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: listing.originalCurrency,
+                maximumFractionDigits: 0,
+              }).format(listing.originalPrice)}
+            </p>
+          ) : null}
           <p className="hs-card__meta">
             {[
               listing.bedrooms != null ? `${listing.bedrooms} bd` : null,
