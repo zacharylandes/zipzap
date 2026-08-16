@@ -103,10 +103,19 @@ describe("filterAndRank", () => {
     expect(ranked.map((row) => row.zip)).toEqual(["73103"]);
   });
 
-  it("sorts by typical price descending by default", () => {
+  it("sorts by yield descending by default", () => {
     const ranked = filterAndRank(
       [cheaperLowerYield, cheapLowCrime],
       { nationalCrimeRate: NATIONAL_CRIME },
+    );
+    expect(ranked.map((row) => row.zip)).toEqual(["73103", "65802"]);
+    expect(ranked[0]!.grossYield).toBeGreaterThan(ranked[1]!.grossYield);
+  });
+
+  it("sorts by typical price descending when requested", () => {
+    const ranked = filterAndRank(
+      [cheaperLowerYield, cheapLowCrime],
+      { nationalCrimeRate: NATIONAL_CRIME, sort: "priceDesc" },
     );
     expect(ranked.map((row) => row.zip)).toEqual(["73103", "65802"]);
     expect(ranked[0]!.zhvi).toBeGreaterThan(ranked[1]!.zhvi);

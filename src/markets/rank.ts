@@ -13,7 +13,7 @@ export type MarketSort =
 
 export type MarketSortColumn = "yield" | "price" | "rent";
 
-export const DEFAULT_MARKET_SORT: MarketSort = "priceDesc";
+export const DEFAULT_MARKET_SORT: MarketSort = "yieldDesc";
 export const MARKETS_PAGE_SIZE = 25;
 
 export type MarketRow = {

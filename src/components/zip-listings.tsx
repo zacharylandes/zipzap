@@ -7,7 +7,7 @@ import { ListingsPanel } from "@/components/listings-panel";
 import { SourceStatusList } from "@/components/source-status";
 import { toListingSort, type MarketQuery } from "@/markets/query";
 import type { ListingSort } from "@/markets/enrich";
-import type { MarketRow } from "@/markets/rank";
+import { DEFAULT_MARKET_SORT, type MarketRow } from "@/markets/rank";
 import { useSearchRequest } from "@/search/use-search-request";
 
 type ZipListingsProps = {
@@ -20,7 +20,9 @@ type ZipListingsProps = {
 export function ZipListings({ zip, query, market, backHref }: ZipListingsProps) {
   const minPrice = query.minPrice ?? 90_000;
   const maxPrice = query.maxPrice ?? 240_000;
-  const [sort, setSort] = useState<ListingSort>(() => toListingSort(query.sort ?? "priceDesc"));
+  const [sort, setSort] = useState<ListingSort>(() =>
+    toListingSort(query.sort ?? DEFAULT_MARKET_SORT),
+  );
   const [page, setPage] = useState(query.page ?? 1);
   const { loading, elapsedSec, error, result, run } = useSearchRequest();
   const city = market?.city ?? "";

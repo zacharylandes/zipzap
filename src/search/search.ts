@@ -16,7 +16,7 @@ import {
   type SourceStatus,
 } from "@/search/schema";
 
-function normalizeCacheKey(input: SearchInput): string {
+export function searchCacheKey(input: SearchInput): string {
   return JSON.stringify({
     v: SEARCH_CACHE_VERSION,
     country: input.country,
@@ -58,11 +58,27 @@ function finalizeResponse(input: SearchInput, response: SearchResponse): SearchR
   return { ...response, listings };
 }
 
+const inflightSearches = new Map<string, Promise<SearchResponse>>();
+
 export async function runSearch(input: SearchInput): Promise<SearchResponse> {
-  const key = normalizeCacheKey(input);
+  const key = searchCacheKey(input);
   const cached = getCached(key);
   if (cached) return finalizeResponse(input, cached);
 
+  const pending = inflightSearches.get(key);
+  if (pending) return pending;
+
+  const search = runUncachedSearch(input, key).finally(() => {
+    inflightSearches.delete(key);
+  });
+  inflightSearches.set(key, search);
+  return search;
+}
+
+async function runUncachedSearch(
+  input: SearchInput,
+  key: string,
+): Promise<SearchResponse> {
   const adapters = getAdaptersForCountry(input.country);
   if (adapters.length === 0) {
     return {

@@ -44,7 +44,7 @@ export function SearchApp({ query }: SearchAppProps) {
   const [marketsTotal, setMarketsTotal] = useState(0);
   const [marketsLoading, setMarketsLoading] = useState(country === "US");
   const [marketsError, setMarketsError] = useState<string | null>(null);
-  const [listingSort, setListingSort] = useState<ListingSort>("yieldDesc");
+  const [listingSort, setListingSort] = useState<ListingSort>(DEFAULT_MARKET_SORT);
   const [listingPage, setListingPage] = useState(1);
   const { loading, elapsedSec, error, result, run } = useSearchRequest();
 
@@ -208,7 +208,7 @@ export function SearchApp({ query }: SearchAppProps) {
               <ListingsPanel
                 listings={result?.listings ?? []}
                 loading={loading}
-                loadingMessage={`Scraping listings… ${elapsedSec}s. This usually takes 20–45 seconds.`}
+                loadingMessage={`Fetching listings… ${elapsedSec}s.`}
                 emptyMessage={
                   result
                     ? "No listings matched this search."

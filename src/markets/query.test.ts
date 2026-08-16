@@ -17,7 +17,7 @@ describe("parseMarketQuery", () => {
       crimeFilter: "averageOrBetter",
       state: undefined,
       minPopulation: 0,
-      sort: "priceDesc",
+      sort: "yieldDesc",
       page: 1,
     });
   });
@@ -42,7 +42,7 @@ describe("parseMarketQuery", () => {
       crimeFilter: "excludeHigh",
       state: "OK",
       minPopulation: 5_000,
-      sort: "priceDesc",
+      sort: "yieldDesc",
       page: 1,
     });
   });

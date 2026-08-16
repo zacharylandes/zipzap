@@ -124,7 +124,9 @@ export function useSearchRequest() {
       if (searchAbortRef.current !== controller) return;
       if (isAbortError(error)) {
         setError(
-          "Realtor.com took too long. Try that ZIP again — a retry is often faster.",
+          input.country === "US"
+            ? "Realtor.com took too long. Try that ZIP again — a retry is often faster."
+            : "That listing search took too long. Try again — a retry is often faster.",
         );
         setResult(null);
         return;
