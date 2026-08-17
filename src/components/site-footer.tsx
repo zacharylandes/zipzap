@@ -47,7 +47,7 @@ export function SiteFooter() {
           </div>
           <div className="hs-footer__col">
             <h4>Sources</h4>
-            <span>Realtor.com</span>
+            <span>Redfin</span>
             <span>Zillow ZHVI / ZORI</span>
             <span>Numbeo</span>
           </div>

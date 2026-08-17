@@ -125,7 +125,7 @@ export function useSearchRequest() {
       if (isAbortError(error)) {
         setError(
           input.country === "US"
-            ? "Realtor.com took too long. Try that ZIP again — a retry is often faster."
+            ? "Redfin took too long. Try that ZIP again — a retry is often faster."
             : "That listing search took too long. Try again — a retry is often faster.",
         );
         setResult(null);

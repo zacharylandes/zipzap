@@ -44,7 +44,7 @@ export function ZipListings({ zip, query, market, backHref }: ZipListingsProps) 
 
   const loadingMessage = useMemo(() => {
     if (result?.cached) return "Loaded cached listings.";
-    return `Scraping Realtor.com for photos… ${elapsedSec}s. This usually takes 20–45 seconds.`;
+    return `Loading Redfin listings… ${elapsedSec}s.`;
   }, [elapsedSec, result?.cached]);
 
   return (
@@ -63,7 +63,7 @@ export function ZipListings({ zip, query, market, backHref }: ZipListingsProps) 
             </Link>
             <h2 className="hs-heading hs-heading--sm hs-markets__picked">{heading}</h2>
             <p className="hs-copy">
-              Photos and prices from Realtor.com. Estimated rent is this ZIP’s typical rent.
+              Photos and prices from Redfin. Estimated rent is this ZIP’s typical rent.
             </p>
           </div>
           {error ? (

@@ -119,5 +119,5 @@ export type SearchResponse = z.infer<typeof searchResponseSchema>;
 
 export const MAX_LISTINGS_PER_SOURCE = 40;
 export const SEARCH_CACHE_TTL_MS = 10 * 60 * 1000;
-export const SEARCH_CACHE_VERSION = "numbeo-3br-v1";
+export const SEARCH_CACHE_VERSION = "redfin-us-v1";
 export const SOURCE_TIMEOUT_MS = 65_000;

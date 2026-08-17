@@ -265,7 +265,7 @@ export function SearchApp({ query }: SearchAppProps) {
               <article className="hs-feature">
                 <h3 className="hs-feature__title">Live listings from the local portal</h3>
                 <p className="hs-feature__text">
-                  Open a ZIP for Realtor.com photos, or switch country for Pisos.com, Inmuebles24,
+                  Open a ZIP for Redfin photos, or switch country for Pisos.com, Inmuebles24,
                   Mercado Libre, and more.
                 </p>
               </article>

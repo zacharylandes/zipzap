@@ -1,5 +1,5 @@
 const SOURCES = [
-  "Realtor.com",
+  "Redfin",
   "Zillow ZHVI",
   "Zillow ZORI",
   "Numbeo",

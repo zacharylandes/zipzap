@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { inmuebles24Adapter } from "@/search/adapters/inmuebles24";
 import { pisosAdapter } from "@/search/adapters/pisos";
 import { realtorAdapter } from "@/search/adapters/realtor";
+import { redfinAdapter } from "@/search/adapters/redfin";
 import { fincaraizAdapter } from "@/search/adapters/fincaraiz";
 import { mercadolibreInmueblesAdapter, ML_MIN_PROPERTY_AGE_FILTER } from "@/search/adapters/mercadolibre-inmuebles";
 import { immobiliareAdapter } from "@/search/adapters/immobiliare";
@@ -58,6 +59,19 @@ describe("portal URL builders", () => {
         listingType: "sale",
       }),
     ).toBe("https://www.pisos.com/venta/pisos-donostia_san_sebastian/");
+  });
+
+  it("builds Redfin ZIP URLs with k-suffixed prices", () => {
+    expect(
+      redfinAdapter.buildSearchUrl({
+        country: "US",
+        location: "Tulsa, OK",
+        listingType: "sale",
+        minPrice: 90_000,
+        maxPrice: 240_000,
+        zip: "74126",
+      }),
+    ).toBe("https://www.redfin.com/zipcode/74126/filter/min-price=90k,max-price=240k");
   });
 
   it("builds Realtor URL", () => {

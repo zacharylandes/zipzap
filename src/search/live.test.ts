@@ -21,8 +21,8 @@ const cases: Case[] = [
     input: { country: "MX", location: "Ciudad de Mexico", listingType: "rent", maxPrice: 25000 },
   },
   {
-    name: "United States / Realtor.com",
-    input: { country: "US", location: "Austin, TX", listingType: "sale", maxPrice: 700000 },
+    name: "United States / Redfin",
+    input: { country: "US", location: "Tulsa, OK", listingType: "sale", zip: "74126", maxPrice: 240000 },
   },
   {
     name: "Spain / Pisos.com",
@@ -59,6 +59,7 @@ describeLive("live search returns real listings", () => {
       country,
       location: "Los Angeles, CA",
       listingType: "sale",
+      zip: "90011",
     });
     for (const source of result.sources) {
       expect(source.count).toBeLessThanOrEqual(20);
