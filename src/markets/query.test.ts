@@ -16,10 +16,15 @@ describe("parseMarketQuery", () => {
       maxPrice: 240_000,
       crimeFilter: "averageOrBetter",
       state: undefined,
+      city: undefined,
       minPopulation: 0,
       sort: "yieldDesc",
       page: 1,
     });
+  });
+
+  it("parses a city search", () => {
+    expect(parseMarketQuery(new URLSearchParams({ city: " Tulsa " })).city).toBe("Tulsa");
   });
 
   it("parses rent estimate sort", () => {
@@ -41,6 +46,7 @@ describe("parseMarketQuery", () => {
       maxPrice: 350_000,
       crimeFilter: "excludeHigh",
       state: "OK",
+      city: undefined,
       minPopulation: 5_000,
       sort: "yieldDesc",
       page: 1,
@@ -73,6 +79,17 @@ describe("zip and home hrefs", () => {
         state: "MS",
       }),
     ).toBe("/?minPrice=90000&maxPrice=240000&crimeFilter=excludeHigh&state=MS");
+  });
+
+  it("includes city in the home URL", () => {
+    expect(
+      homeHref({
+        minPrice: 90_000,
+        maxPrice: 240_000,
+        crimeFilter: "averageOrBetter",
+        city: "Tulsa",
+      }),
+    ).toBe("/?minPrice=90000&maxPrice=240000&crimeFilter=averageOrBetter&city=Tulsa");
   });
 
   it("includes only country in home URL when not US", () => {
@@ -111,6 +128,21 @@ describe("buildMarketsResponse", () => {
     expect(result.markets.map((m) => m.zip)).toEqual(["73103", "65802"]);
     expect(result.total).toBe(2);
     expect(result.states).toEqual(["OK"]);
+  });
+
+  it("returns only the searched city's ZIPs, ranked by yield", () => {
+    const file: MarketsFile = {
+      generatedAt: "2026-08-15T00:00:00.000Z",
+      sources: { zhvi: "zhvi", zori: "zori", crime: "crime" },
+      nationalCrimeRate: 370,
+      markets: [
+        { ...row("73103", 180_000, 1_400, 250), city: "Oklahoma City" },
+        { ...row("73111", 150_000, 1_300, 200), city: "Oklahoma City" },
+        { ...row("74126", 120_000, 1_100, 180), city: "Tulsa" },
+      ],
+    };
+    const result = buildMarketsResponse(file, new URLSearchParams({ city: "Oklahoma City" }));
+    expect(result.markets.map((m) => m.zip)).toEqual(["73111", "73103"]);
   });
 });
 

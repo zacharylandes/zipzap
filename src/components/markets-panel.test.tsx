@@ -50,6 +50,7 @@ const panelProps = {
   maxPrice: 240000,
   crimeFilter: "averageOrBetter" as const,
   state: "",
+  city: "",
   sort: "priceDesc" as const,
   page: 1,
   loading: false,
@@ -58,6 +59,7 @@ const panelProps = {
   onMaxPrice: () => {},
   onCrimeFilter: () => {},
   onState: () => {},
+  onCity: () => {},
   onSort: () => {},
   onPage: () => {},
 };
@@ -105,5 +107,16 @@ describe("MarketsPanel", () => {
     render(<MarketsPanel {...panelProps} markets={many} total={30} />);
     expect(screen.getAllByText(/ZIPs 1–25 of 30/).length).toBeGreaterThan(0);
     expect(screen.getAllByRole("button", { name: "Next" })[0]).toBeEnabled();
+  });
+
+  it("submits a city search", async () => {
+    const user = userEvent.setup();
+    const onCity = vi.fn();
+    render(<MarketsPanel {...panelProps} onCity={onCity} />);
+    const input = screen.getByRole("searchbox", { name: /city/i });
+    await user.clear(input);
+    await user.type(input, "Tulsa");
+    await user.keyboard("{Enter}");
+    expect(onCity).toHaveBeenCalledWith("Tulsa");
   });
 });

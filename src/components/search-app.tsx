@@ -37,6 +37,7 @@ export function SearchApp({ query }: SearchAppProps) {
   const maxPrice = query.maxPrice ?? DEFAULT_MAX_PRICE;
   const crimeFilter: CrimeFilter = query.crimeFilter ?? "averageOrBetter";
   const state = query.state ?? "";
+  const city = query.city ?? "";
   const [sort, setSort] = useState<MarketSort>(query.sort ?? DEFAULT_MARKET_SORT);
   const [page, setPage] = useState(query.page ?? 1);
   const [markets, setMarkets] = useState<MarketRow[]>([]);
@@ -56,6 +57,7 @@ export function SearchApp({ query }: SearchAppProps) {
       crimeFilter,
     });
     if (state) params.set("state", state);
+    if (city) params.set("city", city);
     const controller = new AbortController();
     setMarketsLoading(true);
     fetch(`/api/markets?${params}`, { signal: controller.signal })
@@ -75,7 +77,7 @@ export function SearchApp({ query }: SearchAppProps) {
         if (!controller.signal.aborted) setMarketsLoading(false);
       });
     return () => controller.abort();
-  }, [country, minPrice, maxPrice, crimeFilter, state]);
+  }, [country, minPrice, maxPrice, crimeFilter, state, city]);
 
   const sortedMarkets = useMemo(() => sortMarkets(markets, sort), [markets, sort]);
 
@@ -101,6 +103,7 @@ export function SearchApp({ query }: SearchAppProps) {
         maxPrice: next.maxPrice ?? maxPrice,
         crimeFilter: next.crimeFilter ?? crimeFilter,
         state: next.state ?? state,
+        city: next.city ?? city,
       }),
       { scroll: false },
     );
@@ -140,7 +143,7 @@ export function SearchApp({ query }: SearchAppProps) {
             <h2 className="hs-heading">A search that&apos;s <em>unique to you</em></h2>
             <p className="hs-copy">
               {isUsInvestorScan
-                ? "Filter by price, crime, and state. Then open the ZIPs with the strongest rent-to-price."
+                ? "Filter by city, price, crime, and state. Then open the ZIPs with the strongest rent-to-price."
                 : `Search live for-sale listings in ${countryLabel} and estimate gross yield from Numbeo 1BR rent.`}
             </p>
           </Reveal>
@@ -167,6 +170,7 @@ export function SearchApp({ query }: SearchAppProps) {
               maxPrice={maxPrice}
               crimeFilter={crimeFilter}
               state={state}
+              city={city}
               sort={sort}
               page={page}
               loading={marketsLoading}
@@ -178,12 +182,14 @@ export function SearchApp({ query }: SearchAppProps) {
                   maxPrice,
                   crimeFilter,
                   state,
+                  city,
                 })
               }
               onMinPrice={(value) => replaceQuery({ minPrice: value })}
               onMaxPrice={(value) => replaceQuery({ maxPrice: value })}
               onCrimeFilter={(value) => replaceQuery({ crimeFilter: value })}
               onState={(value) => replaceQuery({ state: value })}
+              onCity={(value) => replaceQuery({ city: value })}
               onSort={(value) => {
                 setSort(value);
                 setPage(1);

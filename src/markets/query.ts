@@ -69,6 +69,7 @@ export function serializeMarketQuery(query: MarketQuery): URLSearchParams {
   params.set("maxPrice", String(query.maxPrice ?? DEFAULT_MAX_PRICE));
   params.set("crimeFilter", query.crimeFilter ?? "averageOrBetter");
   if (query.state) params.set("state", query.state);
+  if (query.city) params.set("city", query.city);
   if (query.sort && query.sort !== DEFAULT_MARKET_SORT) params.set("sort", query.sort);
   if (query.page && query.page > 1) params.set("page", String(query.page));
   return params;
@@ -88,12 +89,14 @@ export function parseMarketQuery(params: URLSearchParams): MarketQuery {
     ? (crimeFilterRaw as CrimeFilter)
     : "averageOrBetter";
   const stateRaw = params.get("state")?.trim();
+  const cityRaw = params.get("city")?.trim();
   return {
     country: parseCountryCode(params.get("country")),
     minPrice: optionalPositive(params.get("minPrice")) ?? DEFAULT_MIN_PRICE,
     maxPrice: optionalPositive(params.get("maxPrice")) ?? DEFAULT_MAX_PRICE,
     crimeFilter,
     state: stateRaw ? stateRaw.toUpperCase() : undefined,
+    city: cityRaw || undefined,
     minPopulation: optionalPositive(params.get("minPopulation")) ?? 0,
     sort: parseMarketSort(params.get("sort")),
     page: Math.max(1, optionalPositive(params.get("page")) ?? 1),

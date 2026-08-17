@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PaginationControls } from "@/components/pagination-controls";
 import {
@@ -20,6 +21,7 @@ type MarketsPanelProps = {
   maxPrice: number;
   crimeFilter: CrimeFilter;
   state: string;
+  city: string;
   sort: MarketSort;
   page: number;
   loading?: boolean;
@@ -29,6 +31,7 @@ type MarketsPanelProps = {
   onMaxPrice: (value: number) => void;
   onCrimeFilter: (value: CrimeFilter) => void;
   onState: (value: string) => void;
+  onCity: (value: string) => void;
   onSort: (value: MarketSort) => void;
   onPage: (value: number) => void;
 };
@@ -95,6 +98,7 @@ export function MarketsPanel({
   maxPrice,
   crimeFilter,
   state,
+  city,
   sort,
   page,
   loading,
@@ -104,10 +108,12 @@ export function MarketsPanel({
   onMaxPrice,
   onCrimeFilter,
   onState,
+  onCity,
   onSort,
   onPage,
 }: MarketsPanelProps) {
   const router = useRouter();
+  const [cityDraft, setCityDraft] = useState(city);
   const totalCount = total ?? markets.length;
   const pageCount = Math.max(1, Math.ceil(totalCount / MARKETS_PAGE_SIZE));
   const safePage = Math.min(Math.max(1, page), pageCount);
@@ -116,10 +122,42 @@ export function MarketsPanel({
     safePage * MARKETS_PAGE_SIZE,
   );
 
+  useEffect(() => {
+    setCityDraft(city);
+  }, [city]);
+
+  function commitCity() {
+    const next = cityDraft.trim();
+    if (next !== city.trim()) onCity(next);
+  }
+
   return (
     <div className="hs-markets">
-      <form className="hs-form hs-markets__filters" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="hs-form hs-markets__filters"
+        onSubmit={(e) => {
+          e.preventDefault();
+          commitCity();
+        }}
+      >
         <div className="hs-form__grid">
+          <label className="hs-field">
+            <span>City</span>
+            <input
+              type="search"
+              value={cityDraft}
+              onChange={(e) => setCityDraft(e.target.value)}
+              onBlur={commitCity}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  commitCity();
+                }
+              }}
+              placeholder="Oklahoma City"
+              aria-label="City"
+            />
+          </label>
           <label className="hs-field">
             <span>Min typical price</span>
             <input

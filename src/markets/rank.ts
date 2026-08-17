@@ -37,11 +37,36 @@ export type RankOptions = {
   maxPrice?: number;
   crimeFilter?: CrimeFilter;
   state?: string;
+  city?: string;
   minPopulation?: number;
   sort?: MarketSort;
   page?: number;
   nationalCrimeRate: number;
 };
+
+function normalizePlace(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+export function marketCityMatches(city: string, state: string, query: string): boolean {
+  const needle = normalizePlace(query);
+  if (!needle) return true;
+
+  const hayCity = normalizePlace(city);
+  const hayState = normalizePlace(state);
+
+  const comma = needle.lastIndexOf(",");
+  if (comma >= 0) {
+    const cityQuery = normalizePlace(needle.slice(0, comma));
+    const stateQuery = normalizePlace(needle.slice(comma + 1));
+    if (!cityQuery || hayCity !== cityQuery) return false;
+    if (!stateQuery) return true;
+    return hayState === stateQuery || stateQuery.startsWith(hayState);
+  }
+
+  if (hayCity === needle) return true;
+  return needle.length >= 3 && hayCity.startsWith(needle);
+}
 
 export function monthlyPropertyTax(price: number, annualRate: number): number {
   if (!(price > 0) || !(annualRate > 0)) return 0;
@@ -149,6 +174,7 @@ export function filterAndRank(markets: MarketRow[], options: RankOptions): Marke
   const crimeFilter = options.crimeFilter ?? "averageOrBetter";
   const minPopulation = options.minPopulation ?? 0;
   const state = options.state?.trim().toUpperCase();
+  const city = options.city?.trim();
   const crimeCutoff =
     crimeFilter === "excludeHigh" ? percentile(markets.map((m) => m.crimeRate), 0.75) : null;
 
@@ -156,6 +182,7 @@ export function filterAndRank(markets: MarketRow[], options: RankOptions): Marke
       if (row.zhvi < minPrice) return false;
       if (row.zhvi > maxPrice) return false;
       if (state && row.state.toUpperCase() !== state) return false;
+      if (city && !marketCityMatches(row.city, row.state, city)) return false;
       if (minPopulation > 0 && (row.population == null || row.population < minPopulation)) {
         return false;
       }

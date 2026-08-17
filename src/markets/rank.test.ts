@@ -188,6 +188,36 @@ describe("filterAndRank", () => {
     expect(ranked.map((row) => row.zip)).toEqual(["73103"]);
   });
 
+  it("filters to ZIPs in the searched city and keeps yield order", () => {
+    const tulsa = market({
+      zip: "74126",
+      city: "Tulsa",
+      state: "OK",
+      zori: 1_100,
+      zhvi: 120_000,
+      crimeRate: 200,
+    });
+    const ranked = filterAndRank([cheapLowCrime, tulsa, cheaperLowerYield], {
+      nationalCrimeRate: NATIONAL_CRIME,
+      city: "oklahoma",
+    });
+    expect(ranked.map((row) => row.zip)).toEqual(["73103"]);
+  });
+
+  it("parses City, ST searches so Springfield, MO does not match other Springfields", () => {
+    const springfieldIl = market({
+      zip: "62701",
+      city: "Springfield",
+      state: "IL",
+      crimeRate: 200,
+    });
+    const ranked = filterAndRank([cheaperLowerYield, springfieldIl], {
+      nationalCrimeRate: NATIONAL_CRIME,
+      city: "Springfield, MO",
+    });
+    expect(ranked.map((row) => row.zip)).toEqual(["65802"]);
+  });
+
   it("drops ZIPs below the population floor", () => {
     const tiny = market({ zip: "00001", population: 400, zori: 2_000, zhvi: 100_000 });
     const ranked = filterAndRank([tiny, cheapLowCrime], {
