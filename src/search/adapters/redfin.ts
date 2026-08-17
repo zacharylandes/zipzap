@@ -1,10 +1,13 @@
 import { normalizeRawListing } from "@/search/adapters/firecrawl-adapter";
-import { fetchRedfinSearchHtml } from "@/search/adapters/redfin-fetch";
+import {
+  fetchRedfinGisListings,
+  fetchRedfinSearchHtml,
+} from "@/search/adapters/redfin-fetch";
 import {
   parseRedfinHtml,
   redfinHtmlLooksBlocked,
 } from "@/search/adapters/redfin-parse";
-import type { AdapterResult, SourceAdapter } from "@/search/adapters/types";
+import type { AdapterResult, RawListing, SourceAdapter } from "@/search/adapters/types";
 import { MAX_LISTINGS_PER_SOURCE, type Listing, type SearchInput } from "@/search/schema";
 
 const ORIGIN = "https://www.redfin.com";
@@ -78,16 +81,38 @@ export const redfinAdapter: SourceAdapter = {
       baseUrl: ORIGIN,
     };
 
-    try {
-      const html = await fetchRedfinSearchHtml(searchUrl);
-      const rawListings = parseRedfinHtml(html, input);
-
+    const toListings = (rawListings: RawListing[]): Listing[] => {
       const listings: Listing[] = [];
       for (const raw of rawListings) {
         const normalized = normalizeRawListing(raw, input, meta);
         if (normalized) listings.push(normalized);
         if (listings.length >= MAX_LISTINGS_PER_SOURCE) break;
       }
+      return listings;
+    };
+
+    if (input.listingType === "sale") {
+      try {
+        const gisListings = toListings(await fetchRedfinGisListings(input));
+        if (gisListings.length > 0) {
+          return {
+            listings: gisListings,
+            status: {
+              sourceId: meta.sourceId,
+              sourceName: meta.sourceName,
+              status: "ok",
+              count: gisListings.length,
+            },
+          };
+        }
+      } catch {
+        // GIS is best-effort; ZIP HTML + Firecrawl remain as fallback.
+      }
+    }
+
+    try {
+      const html = await fetchRedfinSearchHtml(searchUrl);
+      const listings = toListings(parseRedfinHtml(html, input));
 
       return {
         listings,

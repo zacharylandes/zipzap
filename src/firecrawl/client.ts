@@ -11,7 +11,10 @@ export type KeyHealth = {
   keyFingerprint: string;
   disabled: boolean;
   reason?: string;
+  retryAt?: number;
 };
+
+const CREDIT_COOLDOWN_MS = 10 * 60 * 1000;
 
 type ScrapeFn = (
   url: string,
@@ -69,6 +72,10 @@ function isTransientNetworkError(parsed: FirecrawlHttpError): boolean {
   return parsed.status == null && NETWORK_ERROR_PATTERN.test(parsed.message);
 }
 
+function isCreditsExhausted(parsed: FirecrawlHttpError): boolean {
+  return parsed.status === 402 || /insufficient credits/i.test(parsed.message);
+}
+
 function defaultCreateClient(apiKey: string) {
   const client = new Firecrawl({ apiKey });
   return {
@@ -119,15 +126,40 @@ export class FirecrawlClient {
   }
 
   private activeKeys(): string[] {
-    return this.keys.filter((key) => !this.health.get(key)?.disabled);
+    const now = this.now();
+    return this.keys.filter((key) => {
+      const health = this.health.get(key);
+      if (!health?.disabled) return true;
+      if (health.retryAt != null && health.retryAt <= now) {
+        this.health.set(key, {
+          keyFingerprint: health.keyFingerprint,
+          disabled: false,
+        });
+        return true;
+      }
+      return false;
+    });
   }
 
-  private disable(key: string, reason: string) {
+  private disable(key: string, reason: string, retryAt?: number) {
     this.health.set(key, {
       keyFingerprint: fingerprint(key),
       disabled: true,
       reason,
+      retryAt,
     });
+  }
+
+  private reenableCreditsExhausted() {
+    for (const key of this.keys) {
+      const health = this.health.get(key);
+      if (health?.disabled && health.reason === "credits_exhausted") {
+        this.health.set(key, {
+          keyFingerprint: health.keyFingerprint,
+          disabled: false,
+        });
+      }
+    }
   }
 
   private sanitizeError(error: unknown): string {
@@ -165,6 +197,10 @@ export class FirecrawlClient {
         : undefined;
     const started = this.now();
 
+    if (this.activeKeys().length === 0) {
+      this.reenableCreditsExhausted();
+    }
+
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       if (timeoutMs != null && this.now() - started >= timeoutMs) {
         throw lastError ?? new Error("Firecrawl scrape timed out");
@@ -198,8 +234,8 @@ export class FirecrawlClient {
           continue;
         }
 
-        if (parsed.status === 402) {
-          this.disable(key, "credits_exhausted");
+        if (isCreditsExhausted(parsed)) {
+          this.disable(key, "credits_exhausted", this.now() + CREDIT_COOLDOWN_MS);
           continue;
         }
 

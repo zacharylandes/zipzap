@@ -44,9 +44,10 @@ Gross yield is market-typical, not a house-specific Rent Zestimate. Crime is **c
 Server-only. Keys are loaded from:
 
 1. `FIRECRAWL_API_KEY` (optional)
-2. `/Users/zacharylandes/scrape/keys.md` (one `fc-…` key per line)
+2. `FIRECRAWL_API_KEYS` (optional, comma- or newline-separated `fc-…` keys)
+3. `/Users/zacharylandes/scrape/keys.md` or `./keys.md` (`fc-…` tokens anywhere in the file)
 
-Override path with `FIRECRAWL_KEYS_PATH`.
+Override path with `FIRECRAWL_KEYS_PATH`. Production does not see your laptop `keys.md`; set `FIRECRAWL_API_KEYS` there so every key is tried.
 
 **Never** copy keys into this repo or client bundles.
 

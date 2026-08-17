@@ -2,9 +2,31 @@ import fs from "node:fs";
 import path from "node:path";
 
 const DEFAULT_KEYS_PATH = "/Users/zacharylandes/scrape/keys.md";
+const FC_KEY = /fc-[a-zA-Z0-9]+/g;
 
 export function resolveKeysPath(): string {
   return process.env.FIRECRAWL_KEYS_PATH?.trim() || DEFAULT_KEYS_PATH;
+}
+
+function collectKeys(text: string | undefined, keys: string[], seen: Set<string>) {
+  if (!text) return;
+  for (const match of text.matchAll(FC_KEY)) {
+    const key = match[0];
+    if (!seen.has(key)) {
+      keys.push(key);
+      seen.add(key);
+    }
+  }
+}
+
+function readKeyFile(filePath: string): string | null {
+  try {
+    const absolute = path.resolve(filePath);
+    if (!fs.existsSync(absolute)) return null;
+    return fs.readFileSync(absolute, "utf8");
+  } catch {
+    return null;
+  }
 }
 
 export function loadFirecrawlKeys(
@@ -14,26 +36,20 @@ export function loadFirecrawlKeys(
   const keys: string[] = [];
   const seen = new Set<string>();
 
-  const envKey = env.FIRECRAWL_API_KEY?.trim();
-  if (envKey?.startsWith("fc-") && !seen.has(envKey)) {
-    keys.push(envKey);
-    seen.add(envKey);
+  collectKeys(env.FIRECRAWL_API_KEY, keys, seen);
+  collectKeys(env.FIRECRAWL_API_KEYS, keys, seen);
+
+  const files = [keysPath];
+  if (keysPath === resolveKeysPath()) {
+    files.push(path.resolve("keys.md"));
   }
 
-  try {
-    const absolute = path.resolve(keysPath);
-    if (fs.existsSync(absolute)) {
-      const text = fs.readFileSync(absolute, "utf8");
-      for (const raw of text.split(/\r?\n/)) {
-        const line = raw.trim();
-        if (line.startsWith("fc-") && !seen.has(line)) {
-          keys.push(line);
-          seen.add(line);
-        }
-      }
-    }
-  } catch {
-    // Missing/unreadable key file is non-fatal when env key exists.
+  const seenFiles = new Set<string>();
+  for (const file of files) {
+    const absolute = path.resolve(file);
+    if (seenFiles.has(absolute)) continue;
+    seenFiles.add(absolute);
+    collectKeys(readKeyFile(absolute) ?? undefined, keys, seen);
   }
 
   return keys;

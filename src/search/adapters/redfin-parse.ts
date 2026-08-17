@@ -26,12 +26,20 @@ function jsonLdBlocks(html: string): JsonLd[] {
 
 function homeUrl(value: unknown): string | null {
   if (typeof value !== "string") return null;
-  if (!/redfin\.com\/.+\/home\/\d+/i.test(value)) return null;
+  const absolute = value.startsWith("/") ? `https://www.redfin.com${value}` : value;
+  if (!/redfin\.com\/.+\/home\/\d+/i.test(absolute)) return null;
   try {
-    return new URL(value).toString();
+    return new URL(absolute).toString();
   } catch {
     return null;
   }
+}
+
+function unwrap(value: unknown): unknown {
+  if (value && typeof value === "object" && "value" in value) {
+    return (value as { value: unknown }).value;
+  }
+  return value;
 }
 
 function asNumber(value: unknown): number | null {
@@ -120,4 +128,46 @@ export function parseRedfinHtml(html: string, _input: SearchInput): RawListing[]
   }
 
   return [...byUrl.values()].filter((row) => row.url && row.title);
+}
+
+export function parseRedfinGisText(text: string, zip: string): RawListing[] {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text.replace(/^\{\}&&/, ""));
+  } catch {
+    return [];
+  }
+  if (!parsed || typeof parsed !== "object") return [];
+  const payload = (parsed as { payload?: { homes?: unknown } }).payload;
+  const homes = Array.isArray(payload?.homes) ? payload.homes : [];
+
+  const listings: RawListing[] = [];
+  for (const home of homes) {
+    if (!home || typeof home !== "object") continue;
+    const row = home as Record<string, unknown>;
+    const homeZip = String(unwrap(row.zip) ?? unwrap(row.postalCode) ?? "");
+    if (homeZip !== zip) continue;
+    const url = homeUrl(row.url);
+    const street = unwrap(row.streetLine);
+    const city = typeof row.city === "string" ? row.city : "";
+    const state = typeof row.state === "string" ? row.state : "";
+    const title =
+      typeof street === "string" && street && city && state
+        ? `${street}, ${city}, ${state} ${homeZip}`
+        : null;
+    if (!url || !title) continue;
+    const area = asNumber(unwrap(row.sqFt));
+    listings.push({
+      title,
+      url,
+      price: asNumber(unwrap(row.price)),
+      currency: "USD",
+      bedrooms: asNumber(unwrap(row.beds)),
+      bathrooms: asNumber(unwrap(row.baths)),
+      area,
+      areaUnit: area ? "sqft" : null,
+      location: `${city}, ${state}`,
+    });
+  }
+  return listings;
 }

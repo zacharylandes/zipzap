@@ -31,6 +31,27 @@ describe("loadFirecrawlKeys", () => {
     ]);
   });
 
+  it("loads FIRECRAWL_API_KEYS and fc- tokens buried in markdown", () => {
+    const file = path.join(os.tmpdir(), `hs-keys-md-${Date.now()}.md`);
+    tempFiles.push(file);
+    fs.writeFileSync(
+      file,
+      "- `fc-cccccccccccccccccccccccccccccccc`\nFIRECRAWL_API_KEY=fc-dddddddddddddddddddddddddddddddd\n",
+    );
+
+    const keys = loadFirecrawlKeys(file, {
+      FIRECRAWL_API_KEYS:
+        "fc-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, fc-ffffffffffffffffffffffffffffffff",
+    } as NodeJS.ProcessEnv);
+
+    expect(keys).toEqual([
+      "fc-eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "fc-ffffffffffffffffffffffffffffffff",
+      "fc-cccccccccccccccccccccccccccccccc",
+      "fc-dddddddddddddddddddddddddddddddd",
+    ]);
+  });
+
   it("redacts key values", () => {
     const key = "fc-cccccccccccccccccccccccccccccccc";
     expect(redactSecrets(`failed with ${key}`, [key])).toContain("[REDACTED_KEY]");
