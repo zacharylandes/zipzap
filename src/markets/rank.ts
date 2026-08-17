@@ -1,3 +1,5 @@
+import { propertyTaxRateForState } from "@/calc/state-costs";
+
 export const DEFAULT_MIN_PRICE = 90_000;
 export const DEFAULT_MAX_PRICE = 240_000;
 export const DEFAULT_MIN_POPULATION = 5_000;
@@ -23,6 +25,7 @@ export type MarketRow = {
   county: string;
   zhvi: number;
   zori: number;
+  propertyTaxRate?: number;
   grossYield: number;
   crimeRate: number;
   crimeVsNational: number;
@@ -40,9 +43,29 @@ export type RankOptions = {
   nationalCrimeRate: number;
 };
 
-export function grossYield(monthlyRent: number, price: number): number | null {
+export function monthlyPropertyTax(price: number, annualRate: number): number {
+  if (!(price > 0) || !(annualRate > 0)) return 0;
+  return (price * annualRate) / 12;
+}
+
+export function grossYield(
+  monthlyRent: number,
+  price: number,
+  propertyTaxRate = 0,
+): number | null {
   if (!(monthlyRent > 0) || !(price > 0)) return null;
-  return (monthlyRent * 12) / price;
+  const netMonthly = monthlyRent - monthlyPropertyTax(price, propertyTaxRate);
+  return (netMonthly * 12) / price;
+}
+
+export function withStatePropertyTax(row: MarketRow): MarketRow {
+  const propertyTaxRate = propertyTaxRateForState(row.state);
+  const nextYield = grossYield(row.zori, row.zhvi, propertyTaxRate);
+  return {
+    ...row,
+    propertyTaxRate,
+    grossYield: nextYield ?? row.grossYield,
+  };
 }
 
 function percentile(values: number[], p: number): number {

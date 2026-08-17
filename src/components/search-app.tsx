@@ -116,7 +116,7 @@ export function SearchApp({ query }: SearchAppProps) {
         title={isUsInvestorScan ? "Highest rent for the price" : `Homes for sale in ${countryLabel}`}
         sub={
           isUsInvestorScan
-            ? "US ZIPs ranked by typical rent versus typical home value. Counties above average violent crime are hidden."
+            ? "US ZIPs ranked by typical rent minus state property tax, versus typical home value. Counties above average violent crime are hidden."
             : `Live for-sale listings from the primary portal for ${countryLabel}, with gross yield using Numbeo 1BR rent.`
         }
         actions={
@@ -245,8 +245,8 @@ export function SearchApp({ query }: SearchAppProps) {
               <article className="hs-feature">
                 <h3 className="hs-feature__title">ZIPs ranked by rent versus price</h3>
                 <p className="hs-feature__text">
-                  Typical rent over typical home value, using Zillow ZHVI and ZORI, so the strongest
-                  gross yields surface first.
+                  Typical rent minus the state&apos;s effective property tax, over typical home
+                  value, using Zillow ZHVI and ZORI.
                 </p>
               </article>
               <article className="hs-feature">

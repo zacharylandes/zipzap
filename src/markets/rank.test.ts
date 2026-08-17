@@ -32,6 +32,16 @@ describe("grossYield", () => {
     expect(grossYield(1_500, 180_000)).toBeCloseTo((1_500 * 12) / 180_000);
   });
 
+  it("subtracts monthly property tax from rent before annualizing", () => {
+    const rent = 1_500;
+    const price = 180_000;
+    const rate = 0.0223;
+    const monthlyTax = (price * rate) / 12;
+    expect(grossYield(rent, price, rate)).toBeCloseTo(
+      ((rent - monthlyTax) * 12) / price,
+    );
+  });
+
   it("returns null when price or rent is not positive", () => {
     expect(grossYield(1_200, 0)).toBeNull();
     expect(grossYield(0, 180_000)).toBeNull();

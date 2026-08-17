@@ -72,8 +72,10 @@ describe("joinMarkets", () => {
       zhvi: 180000,
       zori: 1400,
       crimeRate: 250,
+      propertyTaxRate: 0.0087,
     });
-    expect(markets[0]!.grossYield).toBeCloseTo((1400 * 12) / 180000);
+    const monthlyTax = (180000 * 0.0087) / 12;
+    expect(markets[0]!.grossYield).toBeCloseTo(((1400 - monthlyTax) * 12) / 180000);
     expect(markets[0]!.crimeVsNational).toBeCloseTo(250 / 370);
   });
 

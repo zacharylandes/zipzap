@@ -14,7 +14,9 @@ export function enrichListings(
     estimatedMonthlyRent: market.zori,
     rentEstimateSource: "zori",
     grossYield:
-      listing.price != null ? grossYield(market.zori, listing.price) : null,
+      listing.price != null
+        ? grossYield(market.zori, listing.price, market.propertyTaxRate ?? 0)
+        : null,
     crimeVsNational: market.crimeVsNational,
   }));
 }

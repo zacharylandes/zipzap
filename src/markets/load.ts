@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { MarketsFile } from "@/markets/file";
-import type { MarketRow } from "@/markets/rank";
+import { withStatePropertyTax, type MarketRow } from "@/markets/rank";
 
 let cached: MarketsFile | null = null;
 
@@ -13,6 +13,7 @@ export function loadMarketsFile(cwd = process.cwd()): MarketsFile {
   if (cached && cwd === process.cwd()) return cached;
   const raw = readFileSync(marketsFilePath(cwd), "utf8");
   const parsed = JSON.parse(raw) as MarketsFile;
+  parsed.markets = parsed.markets.map(withStatePropertyTax);
   if (cwd === process.cwd()) cached = parsed;
   return parsed;
 }

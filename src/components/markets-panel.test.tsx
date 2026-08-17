@@ -33,7 +33,8 @@ const sample: MarketRow = {
   county: "Oklahoma",
   zhvi: 180_000,
   zori: 1_400,
-  grossYield: grossYield(1_400, 180_000)!,
+  propertyTaxRate: 0.0087,
+  grossYield: grossYield(1_400, 180_000, 0.0087)!,
   crimeRate: 250,
   crimeVsNational: 250 / 370,
   population: 12_000,
@@ -71,8 +72,14 @@ describe("MarketsPanel", () => {
     const user = userEvent.setup();
     push.mockClear();
     render(<MarketsPanel {...panelProps} />);
-    await user.click(screen.getByText("9.3%"));
+    await user.click(screen.getByText("8.5%"));
     expect(push).toHaveBeenCalledWith(href);
+  });
+
+  it("shows the state property tax rate next to yield", () => {
+    render(<MarketsPanel {...panelProps} />);
+    expect(screen.getByRole("columnheader", { name: /prop\.? tax/i })).toBeInTheDocument();
+    expect(screen.getByText("0.87%")).toBeInTheDocument();
   });
 
   it("sorts when column headers are clicked", async () => {

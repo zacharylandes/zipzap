@@ -1,5 +1,4 @@
-import type { MarketRow } from "@/markets/rank";
-import { grossYield } from "@/markets/rank";
+import { withStatePropertyTax, type MarketRow } from "@/markets/rank";
 import type { WideRecord } from "@/markets/csv";
 
 export type CrimeCounty = {
@@ -36,23 +35,23 @@ export function joinMarkets(input: {
   for (const [zip, home] of input.zhvi) {
     const rent = input.zori.get(zip);
     if (!rent) continue;
-    const yieldPct = grossYield(rent.value, home.value);
-    if (yieldPct == null) continue;
     const key = countyKey(home.county || rent.county, home.state || rent.state);
     const crime = input.crime.get(key);
     if (!crime) continue;
-    markets.push({
+    const row = withStatePropertyTax({
       zip,
       city: home.city || rent.city,
       state: (home.state || rent.state).toUpperCase(),
       county: home.county || rent.county,
       zhvi: home.value,
       zori: rent.value,
-      grossYield: yieldPct,
+      grossYield: 0,
       crimeRate: crime.crimeRate,
       crimeVsNational: crime.crimeRate / input.nationalCrimeRate,
       population: input.population?.get(zip) ?? null,
     });
+    if (!(row.zori > 0) || !(row.zhvi > 0)) continue;
+    markets.push(row);
   }
   return { markets, nationalCrimeRate: input.nationalCrimeRate };
 }

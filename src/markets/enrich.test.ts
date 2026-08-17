@@ -40,7 +40,9 @@ describe("enrichListings", () => {
     );
     expect(enriched?.estimatedMonthlyRent).toBe(1_400);
     expect(enriched?.rentEstimateSource).toBe("zori");
-    expect(enriched?.grossYield).toBeCloseTo((1_400 * 12) / 120_000);
+    expect(enriched?.grossYield).toBeCloseTo(
+      grossYield(1_400, 120_000, market.propertyTaxRate ?? 0)!,
+    );
     expect(enriched?.crimeVsNational).toBeCloseTo(250 / 370);
     expect(enriched?.zip).toBe("73103");
   });

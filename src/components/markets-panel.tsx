@@ -84,6 +84,10 @@ function yieldLabel(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
 
+function taxRateLabel(value: number): string {
+  return `${(value * 100).toFixed(2)}%`;
+}
+
 export function MarketsPanel({
   markets,
   states,
@@ -202,6 +206,7 @@ export function MarketsPanel({
             <thead>
               <tr>
                 <SortableHeader label="Yield" column="yield" sort={sort} onSort={onSort} />
+                <th scope="col">Prop. tax</th>
                 <th scope="col">ZIP</th>
                 <th scope="col">City</th>
                 <SortableHeader
@@ -243,6 +248,7 @@ export function MarketsPanel({
                     aria-label={`View homes in ${market.zip}`}
                   >
                     <td className="hs-markets__yield">{yieldLabel(market.grossYield)}</td>
+                    <td>{market.propertyTaxRate != null ? taxRateLabel(market.propertyTaxRate) : "—"}</td>
                     <td>{market.zip}</td>
                     <td>
                       {market.city}, {market.state}

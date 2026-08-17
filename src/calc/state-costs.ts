@@ -88,6 +88,10 @@ export function getStateCosts(code: string): StateHousingCosts {
   return found;
 }
 
+export function propertyTaxRateForState(code: string): number {
+  return STATE_HOUSING_COSTS[code.trim().toUpperCase()]?.propertyTaxRate ?? 0;
+}
+
 export function monthlyTaxesAndFees(
   homeValue: number,
   grossRentMonthly: number,
