@@ -189,6 +189,7 @@ export function MarketsPanel({
             >
               <option value="averageOrBetter">Average or better</option>
               <option value="excludeHigh">Exclude only high crime</option>
+              <option value="all">No crime filter</option>
             </select>
           </label>
           <label className="hs-field">

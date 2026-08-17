@@ -109,6 +109,14 @@ describe("MarketsPanel", () => {
     expect(screen.getAllByRole("button", { name: "Next" })[0]).toBeEnabled();
   });
 
+  it("offers a no crime filter option", async () => {
+    const user = userEvent.setup();
+    const onCrimeFilter = vi.fn();
+    render(<MarketsPanel {...panelProps} onCrimeFilter={onCrimeFilter} />);
+    await user.selectOptions(screen.getByRole("combobox", { name: /crime filter/i }), "all");
+    expect(onCrimeFilter).toHaveBeenCalledWith("all");
+  });
+
   it("submits a city search", async () => {
     const user = userEvent.setup();
     const onCity = vi.fn();

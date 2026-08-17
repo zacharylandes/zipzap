@@ -4,7 +4,7 @@ export const DEFAULT_MIN_PRICE = 90_000;
 export const DEFAULT_MAX_PRICE = 240_000;
 export const DEFAULT_MIN_POPULATION = 5_000;
 
-export type CrimeFilter = "averageOrBetter" | "excludeHigh";
+export type CrimeFilter = "averageOrBetter" | "excludeHigh" | "all";
 export type MarketSort =
   | "priceDesc"
   | "priceAsc"
@@ -186,6 +186,7 @@ export function filterAndRank(markets: MarketRow[], options: RankOptions): Marke
       if (minPopulation > 0 && (row.population == null || row.population < minPopulation)) {
         return false;
       }
+      if (crimeFilter === "all") return true;
       if (crimeFilter === "averageOrBetter") {
         return row.crimeRate <= options.nationalCrimeRate;
       }

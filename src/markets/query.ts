@@ -21,7 +21,7 @@ export type MarketQuery = Omit<RankOptions, "nationalCrimeRate"> & {
 
 export { parseCountryCode, supportedCountryOptions };
 
-const CRIME_FILTERS: CrimeFilter[] = ["averageOrBetter", "excludeHigh"];
+const CRIME_FILTERS: CrimeFilter[] = ["averageOrBetter", "excludeHigh", "all"];
 const MARKET_SORTS: MarketSort[] = [
   "priceDesc",
   "priceAsc",

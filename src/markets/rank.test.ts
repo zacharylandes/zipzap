@@ -204,6 +204,25 @@ describe("filterAndRank", () => {
     expect(ranked.map((row) => row.zip)).toEqual(["73103"]);
   });
 
+  it("keeps high-crime ZIPs when the crime filter is off", () => {
+    const philly = market({
+      zip: "19132",
+      city: "Philadelphia",
+      state: "PA",
+      zhvi: 180_000,
+      zori: 1_400,
+      crimeRate: 1_001,
+    });
+    expect(
+      filterAndRank([philly], { nationalCrimeRate: NATIONAL_CRIME }).map((row) => row.zip),
+    ).toEqual([]);
+    const ranked = filterAndRank([philly], {
+      nationalCrimeRate: NATIONAL_CRIME,
+      crimeFilter: "all",
+    });
+    expect(ranked.map((row) => row.zip)).toEqual(["19132"]);
+  });
+
   it("parses City, ST searches so Springfield, MO does not match other Springfields", () => {
     const springfieldIl = market({
       zip: "62701",

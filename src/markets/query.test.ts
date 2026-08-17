@@ -27,6 +27,12 @@ describe("parseMarketQuery", () => {
     expect(parseMarketQuery(new URLSearchParams({ city: " Tulsa " })).city).toBe("Tulsa");
   });
 
+  it("parses the no-crime-filter option", () => {
+    expect(parseMarketQuery(new URLSearchParams({ crimeFilter: "all" })).crimeFilter).toBe(
+      "all",
+    );
+  });
+
   it("parses rent estimate sort", () => {
     expect(parseMarketQuery(new URLSearchParams({ sort: "rentDesc" })).sort).toBe("rentDesc");
     expect(parseMarketQuery(new URLSearchParams({ sort: "rentAsc" })).sort).toBe("rentAsc");
@@ -79,6 +85,16 @@ describe("zip and home hrefs", () => {
         state: "MS",
       }),
     ).toBe("/?minPrice=90000&maxPrice=240000&crimeFilter=excludeHigh&state=MS");
+  });
+
+  it("includes no-crime-filter in the home URL", () => {
+    expect(
+      homeHref({
+        minPrice: 90_000,
+        maxPrice: 240_000,
+        crimeFilter: "all",
+      }),
+    ).toBe("/?minPrice=90000&maxPrice=240000&crimeFilter=all");
   });
 
   it("includes city in the home URL", () => {
