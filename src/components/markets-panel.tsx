@@ -4,10 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PaginationControls } from "@/components/pagination-controls";
+import { UnderwritingAssumptionsForm } from "@/components/underwriting-assumptions";
+import { useUnderwritingAssumptions } from "@/components/underwriting-provider";
+import { formatDscr, formatMoney, formatYield } from "@/components/money";
 import {
+  MARKET_SORT_LABELS,
   MARKETS_PAGE_SIZE,
   marketSortDirection,
   toggleMarketSort,
+  underwriteMarket,
   type CrimeFilter,
   type MarketRow,
   type MarketSort,
@@ -36,14 +41,7 @@ type MarketsPanelProps = {
   onPage: (value: number) => void;
 };
 
-const SORT_LABELS: Record<MarketSort, string> = {
-  priceDesc: "Price: high to low",
-  priceAsc: "Price: low to high",
-  rentDesc: "Rent: high to low",
-  rentAsc: "Rent: low to high",
-  yieldDesc: "Yield: high to low",
-  yieldAsc: "Yield: low to high",
-};
+const SORT_LABELS = MARKET_SORT_LABELS;
 
 function SortableHeader({
   label,
@@ -76,15 +74,11 @@ function SortableHeader({
 }
 
 function usd(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(value, "USD");
 }
 
 function yieldLabel(value: number): string {
-  return `${(value * 100).toFixed(1)}%`;
+  return formatYield(value);
 }
 
 function taxRateLabel(value: number): string {
@@ -113,6 +107,7 @@ export function MarketsPanel({
   onPage,
 }: MarketsPanelProps) {
   const router = useRouter();
+  const { assumptions } = useUnderwritingAssumptions();
   const [cityDraft, setCityDraft] = useState(city);
   const totalCount = total ?? markets.length;
   const pageCount = Math.max(1, Math.ceil(totalCount / MARKETS_PAGE_SIZE));
@@ -215,6 +210,11 @@ export function MarketsPanel({
                 maxPrice / 1000,
               )}k · ${SORT_LABELS[sort]}`}
         </p>
+        <p className="hs-uw__note">
+          ZIP DSCR, NOI, and supported price are approximations from typical ZIP rent and price,
+          not an actual property.
+        </p>
+        <UnderwritingAssumptionsForm compact />
       </form>
 
       {!loading && totalCount > 0 ? (
@@ -245,6 +245,7 @@ export function MarketsPanel({
             <thead>
               <tr>
                 <SortableHeader label="Yield" column="yield" sort={sort} onSort={onSort} />
+                <SortableHeader label="DSCR" column="dscr" sort={sort} onSort={onSort} />
                 <th scope="col">Prop. tax</th>
                 <th scope="col">ZIP</th>
                 <th scope="col">City</th>
@@ -260,6 +261,13 @@ export function MarketsPanel({
                   sort={sort}
                   onSort={onSort}
                 />
+                <SortableHeader label="Est. NOI" column="noi" sort={sort} onSort={onSort} />
+                <SortableHeader
+                  label="DSCR price"
+                  column="priceGap"
+                  sort={sort}
+                  onSort={onSort}
+                />
                 <th scope="col">Crime vs US</th>
                 <th scope="col">
                   <span className="visually-hidden">Listings</span>
@@ -269,6 +277,7 @@ export function MarketsPanel({
             <tbody>
               {pageMarkets.map((market) => {
                 const href = zipHref(market);
+                const modeled = underwriteMarket(market, assumptions);
                 return (
                   <tr
                     key={market.zip}
@@ -287,6 +296,10 @@ export function MarketsPanel({
                     aria-label={`View homes in ${market.zip}`}
                   >
                     <td className="hs-markets__yield">{yieldLabel(market.grossYield)}</td>
+                    <td className="hs-markets__yield">
+                      {formatDscr(modeled.dscr)}
+                      <span className="hs-listings__listed-in">approx.</span>
+                    </td>
                     <td>{market.propertyTaxRate != null ? taxRateLabel(market.propertyTaxRate) : "—"}</td>
                     <td>{market.zip}</td>
                     <td>
@@ -294,6 +307,8 @@ export function MarketsPanel({
                     </td>
                     <td>{usd(market.zhvi)}</td>
                     <td>{usd(market.zori)}/mo</td>
+                    <td>{formatMoney(modeled.noi)}</td>
+                    <td>{formatMoney(modeled.dscrSupportedPurchasePrice)}</td>
                     <td>{market.crimeVsNational.toFixed(2)}×</td>
                     <td className="hs-markets__action">
                       <Link

@@ -29,6 +29,14 @@ const MARKET_SORTS: MarketSort[] = [
   "rentAsc",
   "yieldDesc",
   "yieldAsc",
+  "dscrDesc",
+  "dscrAsc",
+  "dscrMarginDesc",
+  "dscrMarginAsc",
+  "priceGapDesc",
+  "priceGapAsc",
+  "noiDesc",
+  "noiAsc",
 ];
 
 function optionalPositive(value: string | null): number | undefined {

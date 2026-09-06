@@ -156,6 +156,14 @@ describe("filterAndRank", () => {
     expect(ranked.map((row) => row.zip)).toEqual(["65802", "73103"]);
   });
 
+  it("sorts by modeled DSCR descending when requested", () => {
+    const ranked = filterAndRank(
+      [cheaperLowerYield, cheapLowCrime],
+      { nationalCrimeRate: NATIONAL_CRIME, sort: "dscrDesc", maxPrice: 500_000 },
+    );
+    expect(ranked[0]!.zip).toBe("73103");
+  });
+
   it("sorts by yield ascending when requested", () => {
     const ranked = filterAndRank(
       [cheaperLowerYield, cheapLowCrime],

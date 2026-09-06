@@ -45,6 +45,7 @@ describe("enrichListings", () => {
     );
     expect(enriched?.crimeVsNational).toBeCloseTo(250 / 370);
     expect(enriched?.zip).toBe("73103");
+    expect(enriched?.state).toBe("OK");
   });
 
   it("leaves yield null when price is missing", () => {
@@ -145,6 +146,20 @@ describe("sortSearchListings", () => {
       listing({ id: "high", title: "High", price: 100_000, estimatedMonthlyRent: 1_800 }),
     ];
     expect(sortSearchListings(listings, "rentDesc").map((row) => row.id)).toEqual(["high", "low"]);
+  });
+
+  it("defaults listing rank to DSCR with price-gap, NOI, then yield tie-breakers", () => {
+    const listings = enrichListings(
+      [
+        listing({ id: "tight", title: "Tight", price: 200_000 }),
+        listing({ id: "strong", title: "Strong", price: 110_000 }),
+      ],
+      market,
+    );
+    expect(sortSearchListings(listings, "dscrDesc").map((row) => row.id)).toEqual([
+      "strong",
+      "tight",
+    ]);
   });
 
   it("sorts by rent estimate ascending when requested", () => {

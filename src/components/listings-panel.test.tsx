@@ -78,9 +78,11 @@ describe("ListingsPanel", () => {
       />,
     );
 
+    expect(screen.getByRole("button", { name: "Sort by DSCR" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /sort by yield/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /sort by price/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /sort by est\. rent/i })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /rank listings by/i })).toBeInTheDocument();
     expect(screen.getByText("Higher yield flat")).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: /open listing/i })).toHaveLength(2);
   });

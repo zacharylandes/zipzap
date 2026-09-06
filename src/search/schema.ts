@@ -87,12 +87,20 @@ export const listingSchema = z.object({
   thumbnailUrl: z.string().url().nullable(),
   url: z.string().url(),
   zip: z.string().optional(),
+  state: z.string().optional(),
   originalPrice: z.number().nullable().optional(),
   originalCurrency: z.string().optional(),
   estimatedMonthlyRent: z.number().nullable().optional(),
+  actualMonthlyRent: z.number().nullable().optional(),
+  compsMonthlyRent: z.number().nullable().optional(),
+  rentCompCount: z.number().int().nonnegative().optional(),
+  propertyTaxesAnnual: z.number().nullable().optional(),
+  insuranceAnnual: z.number().nullable().optional(),
+  hoaMonthly: z.number().nullable().optional(),
+  utilitiesMonthly: z.number().nullable().optional(),
   grossYield: z.number().nullable().optional(),
   crimeVsNational: z.number().nullable().optional(),
-  rentEstimateSource: z.enum(["zori", "numbeo"]).optional(),
+  rentEstimateSource: z.enum(["zori", "numbeo", "actual", "comps", "property"]).optional(),
 });
 
 export type Listing = z.infer<typeof listingSchema>;

@@ -10,7 +10,8 @@ import { Reveal } from "@/components/reveal";
 import { SearchForm } from "@/components/search-form";
 import { SourceMarquee } from "@/components/source-marquee";
 import { SourceStatusList } from "@/components/source-status";
-import type { ListingSort } from "@/markets/enrich";
+import { useUnderwritingAssumptions } from "@/components/underwriting-provider";
+import { DEFAULT_LISTING_SORT, type ListingSort } from "@/markets/enrich";
 import { homeHref, supportedCountryOptions, zipListingsHref, type MarketQuery } from "@/markets/query";
 import {
   DEFAULT_MAX_PRICE,
@@ -45,8 +46,9 @@ export function SearchApp({ query }: SearchAppProps) {
   const [marketsTotal, setMarketsTotal] = useState(0);
   const [marketsLoading, setMarketsLoading] = useState(country === "US");
   const [marketsError, setMarketsError] = useState<string | null>(null);
-  const [listingSort, setListingSort] = useState<ListingSort>(DEFAULT_MARKET_SORT);
+  const [listingSort, setListingSort] = useState<ListingSort>(DEFAULT_LISTING_SORT);
   const [listingPage, setListingPage] = useState(1);
+  const { assumptions } = useUnderwritingAssumptions();
   const { loading, elapsedSec, error, result, run } = useSearchRequest();
 
   useEffect(() => {
@@ -79,7 +81,10 @@ export function SearchApp({ query }: SearchAppProps) {
     return () => controller.abort();
   }, [country, minPrice, maxPrice, crimeFilter, state, city]);
 
-  const sortedMarkets = useMemo(() => sortMarkets(markets, sort), [markets, sort]);
+  const sortedMarkets = useMemo(
+    () => sortMarkets(markets, sort, assumptions),
+    [markets, sort, assumptions],
+  );
 
   useEffect(() => {
     if (country === "US") return;
@@ -242,10 +247,10 @@ export function SearchApp({ query }: SearchAppProps) {
         <div className="hs-content">
           <Reveal>
             <p className="hs-eyebrow">Why it works</p>
-            <h2 className="hs-heading">Yield first. Listings second.</h2>
+            <h2 className="hs-heading">Markets first. DSCR second.</h2>
             <p className="hs-copy">
-              Rank markets first. Then open the homes. Yield, crime, and live photos stay in one
-              place so you are not bouncing between portals.
+              Rank ZIPs first. Then open homes and inspect modeled DSCR. Gross yield stays as a
+              secondary check.
             </p>
             <div className="hs-features">
               <article className="hs-feature">

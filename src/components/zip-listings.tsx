@@ -5,9 +5,9 @@ import Link from "next/link";
 import { PageHero } from "@/components/page-hero";
 import { ListingsPanel } from "@/components/listings-panel";
 import { SourceStatusList } from "@/components/source-status";
-import { toListingSort, type MarketQuery } from "@/markets/query";
-import type { ListingSort } from "@/markets/enrich";
-import { DEFAULT_MARKET_SORT, type MarketRow } from "@/markets/rank";
+import type { MarketQuery } from "@/markets/query";
+import { DEFAULT_LISTING_SORT, type ListingSort } from "@/markets/enrich";
+import type { MarketRow } from "@/markets/rank";
 import { useSearchRequest } from "@/search/use-search-request";
 
 type ZipListingsProps = {
@@ -20,9 +20,7 @@ type ZipListingsProps = {
 export function ZipListings({ zip, query, market, backHref }: ZipListingsProps) {
   const minPrice = query.minPrice ?? 90_000;
   const maxPrice = query.maxPrice ?? 240_000;
-  const [sort, setSort] = useState<ListingSort>(() =>
-    toListingSort(query.sort ?? DEFAULT_MARKET_SORT),
-  );
+  const [sort, setSort] = useState<ListingSort>(DEFAULT_LISTING_SORT);
   const [page, setPage] = useState(query.page ?? 1);
   const { loading, elapsedSec, error, result, run } = useSearchRequest();
   const city = market?.city ?? "";
@@ -63,7 +61,8 @@ export function ZipListings({ zip, query, market, backHref }: ZipListingsProps) 
             </Link>
             <h2 className="hs-heading hs-heading--sm hs-markets__picked">{heading}</h2>
             <p className="hs-copy">
-              Prices from Redfin. Estimated rent is this ZIP’s typical rent.
+              Prices from Redfin. Estimated rent falls back to this ZIP’s typical rent. DSCR is
+              modeled from editable assumptions, not lender approval.
             </p>
           </div>
           {error ? (
@@ -74,6 +73,7 @@ export function ZipListings({ zip, query, market, backHref }: ZipListingsProps) 
           {result ? <SourceStatusList sources={result.sources} /> : null}
           <ListingsPanel
             listings={result?.listings ?? []}
+            market={market}
             loading={loading}
             loadingMessage={loadingMessage}
             emptyMessage={

@@ -92,6 +92,10 @@ export function propertyTaxRateForState(code: string): number {
   return STATE_HOUSING_COSTS[code.trim().toUpperCase()]?.propertyTaxRate ?? 0;
 }
 
+export function insuranceRateForState(code: string): number | undefined {
+  return STATE_HOUSING_COSTS[code.trim().toUpperCase()]?.insuranceRate;
+}
+
 export function monthlyTaxesAndFees(
   homeValue: number,
   grossRentMonthly: number,

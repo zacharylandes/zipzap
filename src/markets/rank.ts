@@ -1,4 +1,10 @@
-import { propertyTaxRateForState } from "@/calc/state-costs";
+import { insuranceRateForState, propertyTaxRateForState } from "@/calc/state-costs";
+import {
+  UNDERWRITING_DEFAULTS,
+  underwrite,
+  type UnderwritingAssumptions,
+  type UnderwritingResult,
+} from "@/calc/underwriting";
 
 export const DEFAULT_MIN_PRICE = 90_000;
 export const DEFAULT_MAX_PRICE = 240_000;
@@ -11,12 +17,44 @@ export type MarketSort =
   | "rentDesc"
   | "rentAsc"
   | "yieldDesc"
-  | "yieldAsc";
+  | "yieldAsc"
+  | "dscrDesc"
+  | "dscrAsc"
+  | "dscrMarginDesc"
+  | "dscrMarginAsc"
+  | "priceGapDesc"
+  | "priceGapAsc"
+  | "noiDesc"
+  | "noiAsc";
 
-export type MarketSortColumn = "yield" | "price" | "rent";
+export type MarketSortColumn =
+  | "yield"
+  | "price"
+  | "rent"
+  | "dscr"
+  | "dscrMargin"
+  | "priceGap"
+  | "noi";
 
 export const DEFAULT_MARKET_SORT: MarketSort = "yieldDesc";
 export const MARKETS_PAGE_SIZE = 25;
+
+export const MARKET_SORT_LABELS: Record<MarketSort, string> = {
+  priceDesc: "Price: high to low",
+  priceAsc: "Price: low to high",
+  rentDesc: "Rent: high to low",
+  rentAsc: "Rent: low to high",
+  yieldDesc: "Yield: high to low",
+  yieldAsc: "Yield: low to high",
+  dscrDesc: "DSCR: high to low",
+  dscrAsc: "DSCR: low to high",
+  dscrMarginDesc: "DSCR margin: high to low",
+  dscrMarginAsc: "DSCR margin: low to high",
+  priceGapDesc: "DSCR-supported discount: high to low",
+  priceGapAsc: "DSCR-supported discount: low to high",
+  noiDesc: "NOI: high to low",
+  noiAsc: "NOI: low to high",
+};
 
 export type MarketRow = {
   zip: string;
@@ -104,68 +142,204 @@ function percentile(values: number[], p: number): number {
   return sorted[lo]! * (1 - w) + sorted[hi]! * w;
 }
 
-export function sortMarkets(markets: MarketRow[], sort: MarketSort = DEFAULT_MARKET_SORT): MarketRow[] {
+export function underwriteMarket(
+  row: MarketRow,
+  assumptions: UnderwritingAssumptions = UNDERWRITING_DEFAULTS,
+): UnderwritingResult {
+  const taxRate =
+    row.propertyTaxRate && row.propertyTaxRate > 0
+      ? row.propertyTaxRate
+      : propertyTaxRateForState(row.state) || undefined;
+  return underwrite(
+    {
+      purchasePrice: row.zhvi,
+      monthlyRent: row.zori,
+      rentEstimateSource: "zori",
+      propertyTaxRate: taxRate,
+      insuranceRate: insuranceRateForState(row.state),
+    },
+    assumptions,
+  );
+}
+
+function compareNullable(
+  a: number | null | undefined,
+  b: number | null | undefined,
+  fallbackA: string,
+  fallbackB: string,
+  descending: boolean,
+): number {
+  if (a == null && b == null) return fallbackA.localeCompare(fallbackB);
+  if (a == null) return 1;
+  if (b == null) return -1;
+  const diff = descending ? b - a : a - b;
+  return diff !== 0 ? diff : fallbackA.localeCompare(fallbackB);
+}
+
+export function sortMarkets(
+  markets: MarketRow[],
+  sort: MarketSort = DEFAULT_MARKET_SORT,
+  assumptions: UnderwritingAssumptions = UNDERWRITING_DEFAULTS,
+): MarketRow[] {
   const copy = [...markets];
-  if (sort === "priceAsc") {
-    copy.sort((a, b) => a.zhvi - b.zhvi);
-    return copy;
+  const needsModeled =
+    sort === "dscrDesc" ||
+    sort === "dscrAsc" ||
+    sort === "dscrMarginDesc" ||
+    sort === "dscrMarginAsc" ||
+    sort === "priceGapDesc" ||
+    sort === "priceGapAsc" ||
+    sort === "noiDesc" ||
+    sort === "noiAsc";
+  const modeled = needsModeled
+    ? new Map(copy.map((row) => [row.zip, underwriteMarket(row, assumptions)]))
+    : null;
+  const modeledOf = (row: MarketRow): UnderwritingResult => modeled!.get(row.zip)!;
+
+  switch (sort) {
+    case "priceAsc":
+      copy.sort((a, b) => a.zhvi - b.zhvi);
+      return copy;
+    case "priceDesc":
+      copy.sort((a, b) => b.zhvi - a.zhvi);
+      return copy;
+    case "yieldAsc":
+      copy.sort((a, b) => a.grossYield - b.grossYield);
+      return copy;
+    case "yieldDesc":
+      copy.sort((a, b) => b.grossYield - a.grossYield);
+      return copy;
+    case "rentAsc":
+      copy.sort((a, b) => a.zori - b.zori);
+      return copy;
+    case "rentDesc":
+      copy.sort((a, b) => b.zori - a.zori);
+      return copy;
+    case "dscrAsc":
+    case "dscrDesc":
+      copy.sort((a, b) =>
+        compareNullable(
+          modeledOf(a).dscr,
+          modeledOf(b).dscr,
+          a.zip,
+          b.zip,
+          sort === "dscrDesc",
+        ),
+      );
+      return copy;
+    case "dscrMarginAsc":
+    case "dscrMarginDesc":
+      copy.sort((a, b) =>
+        compareNullable(
+          modeledOf(a).dscr == null ? null : modeledOf(a).dscr! - modeledOf(a).targetDscr,
+          modeledOf(b).dscr == null ? null : modeledOf(b).dscr! - modeledOf(b).targetDscr,
+          a.zip,
+          b.zip,
+          sort === "dscrMarginDesc",
+        ),
+      );
+      return copy;
+    case "priceGapAsc":
+    case "priceGapDesc":
+      copy.sort((a, b) =>
+        compareNullable(
+          modeledOf(a).priceGap,
+          modeledOf(b).priceGap,
+          a.zip,
+          b.zip,
+          sort === "priceGapDesc",
+        ),
+      );
+      return copy;
+    case "noiAsc":
+    case "noiDesc":
+      copy.sort((a, b) =>
+        compareNullable(
+          modeledOf(a).noi,
+          modeledOf(b).noi,
+          a.zip,
+          b.zip,
+          sort === "noiDesc",
+        ),
+      );
+      return copy;
+    default: {
+      const _exhaustive: never = sort;
+      return _exhaustive;
+    }
   }
-  if (sort === "yieldDesc") {
-    copy.sort((a, b) => b.grossYield - a.grossYield);
-    return copy;
-  }
-  if (sort === "yieldAsc") {
-    copy.sort((a, b) => a.grossYield - b.grossYield);
-    return copy;
-  }
-  if (sort === "rentAsc") {
-    copy.sort((a, b) => a.zori - b.zori);
-    return copy;
-  }
-  if (sort === "rentDesc") {
-    copy.sort((a, b) => b.zori - a.zori);
-    return copy;
-  }
-  copy.sort((a, b) => b.zhvi - a.zhvi);
-  return copy;
+}
+
+function togglePair(current: MarketSort, desc: MarketSort, asc: MarketSort): MarketSort {
+  if (current === desc) return asc;
+  if (current === asc) return desc;
+  return desc;
 }
 
 export function toggleMarketSort(
   current: MarketSort,
   column: MarketSortColumn,
 ): MarketSort {
-  if (column === "price") {
-    if (current === "priceDesc") return "priceAsc";
-    if (current === "priceAsc") return "priceDesc";
-    return "priceDesc";
+  switch (column) {
+    case "price":
+      return togglePair(current, "priceDesc", "priceAsc");
+    case "rent":
+      return togglePair(current, "rentDesc", "rentAsc");
+    case "yield":
+      return togglePair(current, "yieldDesc", "yieldAsc");
+    case "dscr":
+      return togglePair(current, "dscrDesc", "dscrAsc");
+    case "dscrMargin":
+      return togglePair(current, "dscrMarginDesc", "dscrMarginAsc");
+    case "priceGap":
+      return togglePair(current, "priceGapDesc", "priceGapAsc");
+    case "noi":
+      return togglePair(current, "noiDesc", "noiAsc");
+    default: {
+      const _exhaustive: never = column;
+      return _exhaustive;
+    }
   }
-  if (column === "rent") {
-    if (current === "rentDesc") return "rentAsc";
-    if (current === "rentAsc") return "rentDesc";
-    return "rentDesc";
-  }
-  if (current === "yieldDesc") return "yieldAsc";
-  if (current === "yieldAsc") return "yieldDesc";
-  return "yieldDesc";
 }
 
 export function marketSortDirection(
   sort: MarketSort,
   column: MarketSortColumn,
 ): "ascending" | "descending" | "none" {
-  if (column === "price") {
-    if (sort === "priceAsc") return "ascending";
-    if (sort === "priceDesc") return "descending";
-    return "none";
+  switch (column) {
+    case "price":
+      if (sort === "priceAsc") return "ascending";
+      if (sort === "priceDesc") return "descending";
+      return "none";
+    case "rent":
+      if (sort === "rentAsc") return "ascending";
+      if (sort === "rentDesc") return "descending";
+      return "none";
+    case "yield":
+      if (sort === "yieldAsc") return "ascending";
+      if (sort === "yieldDesc") return "descending";
+      return "none";
+    case "dscr":
+      if (sort === "dscrAsc") return "ascending";
+      if (sort === "dscrDesc") return "descending";
+      return "none";
+    case "dscrMargin":
+      if (sort === "dscrMarginAsc") return "ascending";
+      if (sort === "dscrMarginDesc") return "descending";
+      return "none";
+    case "priceGap":
+      if (sort === "priceGapAsc") return "ascending";
+      if (sort === "priceGapDesc") return "descending";
+      return "none";
+    case "noi":
+      if (sort === "noiAsc") return "ascending";
+      if (sort === "noiDesc") return "descending";
+      return "none";
+    default: {
+      const _exhaustive: never = column;
+      return _exhaustive;
+    }
   }
-  if (column === "rent") {
-    if (sort === "rentAsc") return "ascending";
-    if (sort === "rentDesc") return "descending";
-    return "none";
-  }
-  if (sort === "yieldAsc") return "ascending";
-  if (sort === "yieldDesc") return "descending";
-  return "none";
 }
 
 export function filterAndRank(markets: MarketRow[], options: RankOptions): MarketRow[] {

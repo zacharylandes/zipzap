@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteNav } from "@/components/site-nav";
+import { UnderwritingProvider } from "@/components/underwriting-provider";
 import "./globals.css";
 
 const sharpEarth = localFont({
@@ -36,7 +37,9 @@ export default function RootLayout({
     <html lang="en" className={`${sharpEarth.variable} ${feijoa.variable}`}>
       <body className="hs-page">
         <SiteNav />
-        {children}
+        <UnderwritingProvider>
+          {children}
+        </UnderwritingProvider>
         <SiteFooter />
       </body>
     </html>
