@@ -1,6 +1,10 @@
 node_modules
 .next
 .git
+.env
+.env.*
+!.env.example
+keys.md
 data/raw
 .venv
 data/processed
