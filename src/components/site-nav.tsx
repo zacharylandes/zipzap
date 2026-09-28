@@ -14,7 +14,11 @@ function LogoMark() {
 
 export function SiteNav() {
   const pathname = usePathname();
-  const current = pathname.startsWith("/calc") ? "calc" : "search";
+  const current = pathname.startsWith("/zone")
+    ? "zone"
+    : pathname.startsWith("/calc")
+      ? "calc"
+      : "search";
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
 
@@ -78,6 +82,13 @@ export function SiteNav() {
             >
               Sell vs buy
             </Link>
+            <Link
+              href="/zone"
+              className="hs-nav__link"
+              aria-current={current === "zone" ? "page" : undefined}
+            >
+              Zone
+            </Link>
           </div>
           <div className="hs-nav__actions">
             <Link href="/#search" className="hs-btn hs-btn--primary">
@@ -102,6 +113,9 @@ export function SiteNav() {
           </Link>
           <Link href="/calc" aria-current={current === "calc" ? "page" : undefined}>
             Sell vs buy
+          </Link>
+          <Link href="/zone" aria-current={current === "zone" ? "page" : undefined}>
+            Zone
           </Link>
           <Link href="/#search">Get started</Link>
         </div>

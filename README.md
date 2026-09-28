@@ -33,6 +33,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+### Zone (Texas parcels)
+
+`/zone` searches parcels loaded in PostGIS. It does not geocode.
+
+```bash
+cp .env.example .env
+make setup
+make db
+make migrate
+make seed
+make dev
+```
+
+Open [http://localhost:3000/zone](http://localhost:3000/zone). `make ingest` loads the StratMap 2025 Travis County file. Selecting a Travis parcel loads Austin enrichment from public GIS (`GET /api/properties/:id/enrichment`). Optional batch zoning: `make austin-zoning` then `make austin-zoning-link`. See [docs/austin-parcel-enrichment-audit.md](docs/austin-parcel-enrichment-audit.md) and [docs/austin-enrichment-sources.md](docs/austin-enrichment-sources.md).
+
 ### Market data
 
 `npm run data:refresh` downloads public CSVs (Zillow ZHVI/ZORI + County Health Rankings violent crime), joins them on ZIP/county, and writes [`data/markets.json`](data/markets.json). Raw CSVs land in `data/raw/` (gitignored). Re-run monthly when Zillow refreshes.

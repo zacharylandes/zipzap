@@ -1,11 +1,6 @@
-.git
-.next
 node_modules
-coverage
-test-results
-playwright-report
-.env*
-keys.md
+.next
+.git
 data/raw
-*.md
-!README.md
+.venv
+data/processed

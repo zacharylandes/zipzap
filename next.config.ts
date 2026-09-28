@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   // Playwright is a local-only, Node-native dep (Facebook adapter). Keep it out
   // of the bundle so it loads from node_modules at runtime.
-  serverExternalPackages: ["playwright", "playwright-core"],
+  serverExternalPackages: ["playwright", "playwright-core", "pg"],
   outputFileTracingIncludes: {
     "/api/markets": ["./data/markets.json"],
     "/api/search": ["./data/markets.json"],

@@ -1,0 +1,60 @@
+{
+  "type": "FeatureCollection",
+  "crs": { "type": "name", "properties": { "name": "EPSG:4326" } },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "Prop_ID": "100001",
+        "GEO_ID": "GEO-100001",
+        "SITUS_ADDR": "100 Congress Ave, Austin, TX 78701",
+        "SITUS_CITY": "AUSTIN",
+        "SITUS_STAT": "TX",
+        "SITUS_ZIP": "78701",
+        "LEGAL_AREA": 0.25,
+        "LGL_AREA_U": "Acres",
+        "FIPS": "48453",
+        "COUNTY": "TRAVIS",
+        "SOURCE": "TRAVIS CENTRAL APPRAISAL DISTRICT",
+        "DATE_ACQ": 20250201
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-97.7435, 30.2645],
+          [-97.7430, 30.2645],
+          [-97.7430, 30.2650],
+          [-97.7435, 30.2650],
+          [-97.7435, 30.2645]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Prop_ID": "100002",
+        "GEO_ID": "GEO-100002",
+        "SITUS_ADDR": "100 Congress Ave Apt 2, Austin, TX 78701",
+        "SITUS_CITY": "AUSTIN",
+        "SITUS_STAT": "TX",
+        "SITUS_ZIP": "78701",
+        "LEGAL_AREA": 0.1,
+        "LGL_AREA_U": "Acres",
+        "FIPS": "48453",
+        "COUNTY": "TRAVIS",
+        "SOURCE": "TRAVIS CENTRAL APPRAISAL DISTRICT",
+        "DATE_ACQ": 20250201
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-97.7430, 30.2645],
+          [-97.7425, 30.2645],
+          [-97.7425, 30.2650],
+          [-97.7430, 30.2650],
+          [-97.7430, 30.2645]
+        ]]
+      }
+    }
+  ]
+}

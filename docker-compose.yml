@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: zone
+      POSTGRES_PASSWORD: zone
+      POSTGRES_DB: zone
+    ports:
+      - "5434:5432"
+    volumes:
+      - zone_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zone -d zone"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://zone:zone@db:5432/zone
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  zone_pg:
